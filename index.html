@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>יומן עבודה</title>
+<style>
+  :root {
+    --navy: #1F3864;
+    --navy-dark: #14264a;
+    --light-blue: #DCE6F1;
+    --paper: #FBFAF7;
+    --line: #D8DEE8;
+    --text: #26313f;
+    --muted: #6b7a8d;
+    --danger: #b5484d;
+  }
+
+  * { box-sizing: border-box; }
+
+  #app-root {
+    direction: rtl;
+    font-family: 'Segoe UI', 'Rubik', Arial, sans-serif;
+    color: var(--text);
+    background: var(--paper);
+    min-height: 100%;
+    padding: 28px 20px 60px;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; }
+
+  .masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 3px solid var(--navy);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .masthead h1 {
+    font-size: 26px;
+    margin: 0 0 4px;
+    color: var(--navy);
+    letter-spacing: 0.2px;
+  }
+
+  .masthead p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+
+  .masthead-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .seed-banner {
+    background: #FFF7E6;
+    border: 1px solid #F0C36D;
+  }
+  .seed-banner p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #5c4a1a;
+  }
+
+  .export-btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 6px;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+  }
+  .export-btn:hover { background: var(--navy-dark); }
+  .export-btn:active { transform: scale(0.98); }
+  .export-btn:disabled { background: #a9b4c4; cursor: not-allowed; }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(31,56,100,0.06);
+  }
+
+  .card h2 {
+    font-size: 15.5px;
+    color: var(--navy);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card h2::before {
+    content: "";
+    width: 4px;
+    height: 16px;
+    background: var(--navy);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+  .datetime-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 640px) {
+    .datetime-row { grid-template-columns: 1fr; }
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  input[type="date"], input[type="time"], input[type="text"], textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    background: #fdfdfc;
+    direction: rtl;
+  }
+  textarea { resize: vertical; min-height: 44px; }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(31,56,100,0.12);
+  }
+
+  .add-row {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .add-btn {
+    background: var(--light-blue);
+    color: var(--navy);
+    border: 1px solid #b9cae3;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .add-btn:hover { background: #cfe0f2; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--navy);
+    color: #fff;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 9px 8px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    text-align: right;
+  }
+  tbody tr:nth-child(even) { background: #f5f8fc; }
+  tbody tr:hover { background: var(--light-blue); }
+
+  .col-date { white-space: nowrap; font-weight: 600; width: 90px; }
+  .col-time { white-space: nowrap; width: 70px; text-align: center; }
+  .col-actions { width: 62px; text-align: center; white-space: nowrap; }
+
+  .del-btn, .edit-btn {
+    background: none;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 4px;
+  }
+  .del-btn { color: var(--danger); }
+  .del-btn:hover { background: #fbe6e7; }
+  .edit-btn { color: var(--navy); }
+  .edit-btn:hover { background: var(--light-blue); }
+
+  tr.editing-row { background: #fff3cd !important; }
+
+  .cancel-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  .cancel-btn:hover { background: #f2f2f2; }
+
+  .upload-card { border: 1.5px dashed #b9cae3; background: #f7fafd; }
+
+  .upload-block {
+    padding: 12px 0;
+    border-bottom: 1px dashed #d6e2ef;
+  }
+  .upload-block:last-of-type { border-bottom: none; }
+
+  .upload-block-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .upload-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  input[type="file"] {
+    font-size: 13px;
+    color: var(--text);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 10px;
+    max-width: 100%;
+  }
+
+  .img-preview-thumb {
+    height: 64px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    object-fit: cover;
+  }
+
+  .ocr-btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ocr-btn:hover { background: var(--navy-dark); }
+  .ocr-btn:disabled { background: #a9b4c4; cursor: not-allowed; }
+
+  .ocr-status {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .ocr-status.error { color: var(--danger); }
+
+  .review-table-wrap { margin-top: 16px; }
+  .review-table-wrap table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .review-table-wrap th { background: #eef3fa; color: var(--navy); padding: 7px; font-size: 12px; text-align: center; }
+  .review-table-wrap td { padding: 7px; border-bottom: 1px solid var(--line); text-align: right; vertical-align: top; }
+  .review-table-wrap .col-check { width: 30px; text-align: center; }
+
+  .commit-btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+  .commit-btn:hover { background: var(--navy-dark); }
+  .commit-btn:disabled { background: #a9b4c4; cursor: not-allowed; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .status-msg {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 8px;
+    min-height: 16px;
+  }
+  .status-msg.error { color: var(--danger); }
+
+  .field-with-mic {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .field-with-mic textarea,
+  .field-with-mic input {
+    flex: 1;
+  }
+  .mic-btn {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .mic-btn:hover { background: #f0f2f6; }
+  .mic-btn.recording {
+    background: var(--danger, #c0392b);
+    border-color: var(--danger, #c0392b);
+    color: #fff;
+    animation: pulse 1.2s infinite;
+  }
+  .mic-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(192,57,43,0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(192,57,43,0); }
+    100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+  }
+
+  .attach-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .attach-btn {
+    background: var(--light-blue);
+    color: var(--navy);
+    border: 1px solid #b9cae3;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .attach-btn:hover { background: #cfe0f2; }
+  .attach-preview-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .attach-thumb-wrap {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+  .attach-thumb-wrap img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    display: block;
+  }
+  .attach-remove-btn {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: #fff;
+    border: 2px solid #fff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .col-photos { width: 56px; text-align: center; }
+  .row-thumbs { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }
+  .row-thumb-link img {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    display: block;
+  }
+  .row-thumb-more {
+    font-size: 11px;
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .quick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .quick-chip {
+    background: #eef3fa;
+    color: var(--navy);
+    border: 1px solid #cfe0f2;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .quick-chip:hover { background: var(--light-blue); }
+  .quick-chip.duplicate { background: #fff; color: var(--muted); border-style: dashed; }
+
+  .time-with-now {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .time-with-now input { flex: 1; min-width: 0; }
+  .now-btn {
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--navy);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 0 10px;
+    height: 38px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .now-btn:hover { background: var(--light-blue); }
+
+  .summary-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .summary-pill {
+    background: #f5f8fc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .summary-pill b { display: block; color: var(--navy); font-size: 16px; }
+
+  .secondary-btn { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+  .secondary-btn:hover { background: var(--light-blue); }
+  .link-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 12.5px; cursor: pointer; text-decoration: underline; padding: 6px 4px;
+  }
+  .analysis-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 6px; }
+  .analysis-block { margin-top: 14px; }
+  .analysis-block h3 { font-size: 14px; color: var(--navy); margin: 0 0 8px; }
+  .owner-group { margin-bottom: 12px; }
+  .owner-group b { color: var(--navy); }
+  .owner-group ul { margin: 4px 0 0; padding-inline-start: 20px; font-size: 13px; }
+  .owner-group li { margin-bottom: 3px; }
+  .ai-text {
+    font-size: 13.5px; line-height: 1.65; white-space: pre-wrap;
+    background: #f9fafc; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+  }
+  .analysis-loading { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .analysis-error { color: var(--danger); font-size: 13px; margin-top: 8px; }
+  .analysis-checkbox-row {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12.5px; color: var(--muted); margin-top: 12px;
+  }
+
+  .save-reminder {
+    display: none;
+    background: #fdecea;
+    color: #b3261e;
+    border: 1px solid #f5c2c0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13.5px;
+    margin-bottom: 14px;
+  }
+
+  .month-filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--navy);
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .sync-badge {
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .sync-badge.sync-online { color: #2e7d4f; }
+  .sync-badge.sync-saving { color: #b5860a; }
+  .sync-badge.sync-connecting { color: var(--muted); }
+  .sync-badge.sync-offline { color: var(--danger); }
+  .sync-badge.sync-unavailable { color: var(--danger); }
+  .sync-retry-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 2px 5px;
+    border-radius: 4px;
+    color: var(--muted);
+    vertical-align: middle;
+  }
+  .sync-retry-btn:hover { background: var(--light-blue); color: var(--navy); }
+  .sync-retry-btn:disabled { opacity: 0.4; cursor: default; }
+
+  @media (max-width: 640px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .masthead { flex-direction: column; align-items: flex-start; }
+    .export-btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div id="app-root"></div>
+
+<script id="seed-data">/*SEED_START*/window.__SEED_ENTRIES__ = [{"activity":"שיחה על הצורך בהעברת הקוים שך בזק למבנה החדש + דינאמיקלס","conclusions":"נדרשת בדיקת דינמיקה","date":"2026-07-08","id":"emrrpq90c2ldl0","time":"14:30","who":"איציק"},{"activity":"להקשר לאביעד הקבלן לגבי הסבר על מיקומים של תלמידים שצריכיםנגישות(יהלי אוחיון ו'1, שינה ב'2, איתן בן אלישע ג'3.","conclusions":"","date":"2026-07-15","id":"emrrpq90c4fbl3","time":"15:10","who":"עליזה"},{"activity":"דיווח על שיחת ההורים לעליזה(נעדרה ללא הודעה)","conclusions":"","date":"2026-07-09","id":"emrrpq90c4hvlq","time":"12:20","who":"עליזה"},{"activity":"שליחת הודעה בקבוצת צוות ניהול לגבי מפגש הערכות","conclusions":"","date":"2026-07-09","id":"emrrpq90c4zjbw","time":"12:20","who":"צוות ניהול"},{"activity":"ועדת פילוח אביגיל נייס","conclusions":"עליזה לא ענתה לטלפונים/הודעות ליענה תזכרה בבוקר + שלחה קישור למפגש","date":"2026-07-08","id":"emrrpq90cgwhcu","time":"14:00","who":"הורים, שלומית, עו\"ס, אמא של אביגיל (עליזה נעדרה)"},{"activity":"שיחה לגבי מפגש הערכות לשנה הבאה","conclusions":"נקבע זמן ל-21:00, עליזה לא יצרה קשר; במענה להודעה השיבה שאינה פנויה,היא בזום עם טלי, ולא נתנה תשובה לתאריך חלופי למפגש כצוות ניהול","date":"2026-07-08","id":"emrrpq90ci8klv","time":"14:50","who":"עליזה"},{"activity":"סיכום לגבי שיבוצים, מהלך טקס פתיחת חט\"ב ב-30.8 בשעה 17:00 (קשת בלונים, צ'ופר, פעילות בכיתות/ גנים) + טקס ו' זהבה, תכנון טקס ופתיחת היום הראשון, קביעת מזוזה ע\"י רב העיר בנוכחות ראש העיר,וכד' , טקס קצר ע\"י כיתה ו' של זהבה.\nמילוי לוח גאנט, לבדוק שיש ע\"י רכזי מקצוע(אנגלית/חשבון /שפה) 2 ימי שיא, פעילויות, אירועים ב\"ס בתחום התורני, ציציצ ברזל, מחנכת ו' הפרשת חלה +פעילויות שכבת ו'.\nלגבי חוג תורני מהשעה 12:00","conclusions":"חלוקת עבודה , דורית ממלאהטופס לגבי שעות בודדות , חוגים תורניים אחר הצהרים, צביה לעבות את לוח גאנט. להוציא הודעות מסודרות למורים בפרטי.","date":"2026-07-15","id":"emrrpq90clh9ku","time":"10:00","who":"עליזה, דורית"},{"activity":"שיחה אישית","conclusions":"","date":"2026-07-13","id":"emrrpq90cns0gw","time":"08:15","who":""},{"activity":"שיחה,ודיוח לגבי מיקום וקבלת ציוד לחט\"צ","conclusions":"","date":"2026-07-02","id":"emrrpq90cqnd5k","time":"12:00","who":"איציק"},{"activity":"פגישה עם איציק במבנה החדש , בדיקת מספר דברים,\nסיור בחט\"צ לגבי ציוד, שיחה עם אושרת אוחיון ומיכל והסבר לגבי הריהוט שהוזמן לגןוהוראה לאושרת להכין רשימה של דברים שהיא צריכה לעליזה(הן הגיעו בשעה 11:00).\nראינו שחסרים 12  ספסלים בכל מבנה של חט\"צ.\nבדיקה של חדרי ספח וצילום לגבי תשתית עבור אלי פרץ מהתקשוב בעירייה.\nבדיקת חדרים במנהלה , היכן למקם את הסגניות.","conclusions":"אישור עליזה; כניסה מתוכננת ב-12.8 למבנה ג׳ וחצי חט\"ב; בדיקת תיאום טקס וצילום מול תקציב עירייה","date":"2026-07-16","id":"emrrpq90ct46zv","time":"","who":"איציק, אשרת מיכל"},{"activity":"שיחה לגבי קבלת הציוד לחטיבה הצעירה; פתחתי תוכניות עם פירוט הריהוט ושלחתי לו הודעה מסודרת עם פירוט כמויות ורשימת ציוד שצריך להיות ע\"מ שידווח על חוסרים למחלקת רכש(יניב)","conclusions":"איציק יבדוק כמויות, כנראה ביום ראשון","date":"2026-07-09","id":"emrrpq90ct5323","time":"11:52","who":"איציק"},{"activity":"לפי מה שהציעה עליזה - להעביר את הסגניות לחדרון ללא חלון (פרטני 6+7 ), לאחר הסיור הצעתי להעביר לחדרים פרטני  5+4.\nבסיור עברנו גם על ארגון הסיפריה וחדר מחשבים.\nשוחחנו עם עליזה תוך כדי לסגור דברים.\nהיינו במבנה עד שעה 12:00.\nהצעתי ליעד את חדר אחות לחדר טיפולים כי הוא מחוץ למנהלה.ולמקם את חדר אחות באחד החדרים שבמנהלה.","conclusions":"שלחתי ווצאפ לעליזה עם מספר נק' חשובות לטיפול. (חדר טיפולים, חדרי סגניות והנצחת רינה אשרף).","date":"2026-07-16","id":"emrrpq90cuoj8e","time":"","who":"איציק ,עליזה"},{"activity":"ביקור במבנה, החלטה על העברת שולחנות","conclusions":"העברת השולחנות הגדולים למעלה לכיתות, ושולחנות קטנים יותר לכיתות א׳","date":"2026-07-08","id":"emrrpq90cvhl9a","time":"11:00","who":"איציק"},{"activity":"שיחת ועידה","conclusions":"","date":"2026-07-13","id":"emrrpq90cvrr94","time":"08:30","who":"עליזה, דורית"},{"activity":"שיחה על שליחת טופס 14 + בקשת העברה לביתם לכיתת חנ\"מ","conclusions":"","date":"2026-07-09","id":"emrrpq90czdvq2","time":"10:30","who":"הורי אביגיל נייס"},{"activity":"המשך שיחת ועידה עד 12:30 לסרוגין עם עליזה לגבי שיבוצים, בנוסף שיחות עם איציק לגבי הריהוט, שיחה עם דבורה לגבי כלי נגינה שבאו לקחת מהקונסרבטוריון (שוחחתי עם טניה השבוע שיבואו לקחת את הציוד).","conclusions":"","date":"2026-07-13","id":"emrrqhy0rik1r5","time":"09:00","who":"דורית, עליזה, איציק, דבורה"},{"activity":"שיחת עדכון מול איציק לגבי עיכוב בהובלה, קבלת מפתחות של המעלית ובעייתיות לגבי איתור השולחנות בממ\"ד שבחט\"צ","conclusions":"","date":"2026-07-15","id":"emrrqnxbygoopx","time":"09:30","who":"איציק"},{"activity":"התקשרתי לאביעד והסברתי לו על פי המפה שהכנתי מה מיקום של הכיתות של כל תלמיד.","conclusions":"יהלי אוחיוןו'1 קומה ב' אגף בנים. שינה ב'2 קומה א אגף בנות. איתן בן אלישע ג'3 קומה א אגף בנים.","date":"2026-07-15","id":"emrrrhcn2l50y4","time":"15:30","who":"אביעד הקבלן"},{"activity":"עליזה ביקשה שאגיע לשיחה אישית אך הייתה בשיחה עם דורית בינתיים בעבדתי בחדר שלי על עדכון לוח גאנט בשעה 13:00 הצטרפתי יחד עם אושרת תורגמן מנהלת החטיבה הצעירה לשיחה ודיברנו על אופן התנהלות החטיבה אופן הקצאת השעות והשיעורים שיהיו.\nלאחר מכן אושר הלכה ושוחחנו על אופן חלוקת השעות במערכת השעות לפי שכבות. התחלנו לשבץ למקצועות חשבון ומדעים.\nבנוסף שוחחנו על סגירת ימים לרובוטיקה שיהיה יום ראשון וכן על כך שדורית תיידע אותי לגבי פרוייקט בית ספר מנגן.\nוכן לברר מתי המחוננים","conclusions":"אני אעמוד בקשר עם בית ספר למחוננים וכן עם הרכזים ללוח גאנט ובנוסף אתאם ימים לחוגים חיצוניים מתי יגיעו לביהס דורית תמשיך בשיבוץ המערכת","date":"2026-07-19","endTime":"","id":"emrrxsqvb3gkva","time":"12:00","who":"עליזה, דורית ואושרת"},{"activity":"הכנת קובץ עם שמות החדרים לשילוט למבנה החדש תוך חשיבה על שמות לחדרים ושליחת הקובץ לעליזה במייל ולנטלי האדריכלית בווטסאפ לפי בקשתה","conclusions":"אם נטלי לא שולחת לי את הקובץ המעוצב לתזכר אותה בעוד יומיים","date":"2026-08-02","endTime":"18:40","id":"emsh1pyofd2tej","time":"17:00","who":"צביה, עליזה ונטלי"},{"activity":"ישיבה שיזמה דורית לגבי שיבוץ מורים ומקצועות במערכות. עליזה שיתפה שיש שינויים בהם שמחה שתלמד רק במסגרת מורת שילוב, זהבה אוחנה פורשת. בעקבות הדווח של עליזה עשינו חשיבה מי ילמד מדעים במקום זהבה, מי יכנס במקום שמחה. בנוסף שוחחנו לגבי חוסר בשעות בשכבות הבוגרות. העלינו אפשרות שלאה בוסקילה או ריקי יחנכו כיתה ג בנים. עליזה דווחה לגבי ריכוזים שעדיין לא סגורים.","conclusions":"עליזה תברר עם הפיקוח לגבי שעות נוספות למורות, תוספת שעות לשכבות הבוגרות, תברר מול דבורה לגבי מעבר של דינמיקלאס לסגור תאריך ולהיכן נעביר. אני אתאם מול רובוטיקה שיגיעו בימי שלישי.","date":"2026-07-31","endTime":"11:30","id":"emsh1pyofo40ld","time":"09:00","who":"צביה, דורית ועליזה"},{"activity":"כתבתי לעליזה בנקודות הודעות ונושאים שובים שכדאי שתפרסם צוות המורים לקראת המעבר למבנה החדש ופתיחת שנת הלימודים.\nבנוסף ביקשתי ממנה לברר מתי הצוות יוכל להגיע למבנה החדש לארגן את הציוד.","conclusions":"עליזה תוציא הודעה מסודרת לצוות","date":"2026-08-03","endTime":"11:00","id":"emshs7bqbt8s96","time":"08:30","who":"צביה ועליזה"},{"activity":"שוחחתי עם עליזה לגבי סגירה של מחנכת לכיתה ג1 אין ברירה וכנראה תסגור עם ריקי סלמון בשל חוסר בכח אדם והצורך גם במורה לאנגלית.","conclusions":"עליזה תעשה עם ריקי תיאום ציפיות","date":"2026-08-04","endTime":"15:20","id":"emshsa1v0d5utd","time":"14:30","who":"צביה ועליזה"},{"activity":"שיחה עם הרב שלומי לגבי הזמנת חוברות לימוד לתלמידים. העברתי לרב שלומי את כמויות התלמידים על מנת שיסגור הזמנה.","conclusions":"הרב שלומי יזמין את החוברות","date":"2026-08-03","endTime":"18:30","id":"emshsfjl23vv5k","time":"18:00","who":"צביה והרב שלומי"},{"activity":"זום עם נציגים מישרים, כרמית ועליזה, תיאום ציפיות לגבי שנה הבאה.","conclusions":"השנה יהיה ליווי של ישרים בביהס יגיעו בימי שלישי","date":"2026-08-02","endTime":"09:45","id":"emshskmbin8tcl","time":"09:00","who":"צביה, עליזה, כרמית ונציגות מישרים"},{"activity":"יום חשיפה להצגות ילדים תיאטרון אורנה פורת (ההצגות: ידידי תילתן, מסביב לעולם ב-80 יום, איך אורזים פילים, גבעת האירוסים השחורים.","conclusions":"במידה ונזמין הצגה זה יהיה רק לילדי הגנים.","date":"2026-08-02","endTime":"14:30","id":"emshso28hkkkwm","time":"10:00","who":"צביה"},{"activity":"יום חשיפה בחיפה מרכז קריגר תיאטרון השעה הישראלי (הצגות: מבצע טהראן, יותר מסיפור אחד ושכונת חיים)","conclusions":"מילאתי משוב ונרשמנו להצגות לשנה הקרובה","date":"2026-08-04","endTime":"14:30","id":"emshss2r023kp5","time":"09:00","who":"צביה"},{"activity":"עדכון מאיציק לגבי סיום ארגון הציוד ופירוק המקרן של דינמיקלאס","conclusions":"איציק פירק את המקרן של הדינמיקלאס וארז אותו","date":"2026-08-03","endTime":"10:45","id":"emshsudcbjqhl6","time":"10:30","who":"צביה ואיציק"},{"activity":"עדכון מאיציק והסבר איפה למקם את הארגזים","conclusions":"איציק ממקם את הארגזים בכיתות מסוימות עד השיבוצים","date":"2026-08-04","endTime":"11:30","id":"emshswkgsu2dju","time":"11:00","who":"צביה ואיציק"},{"activity":"מפגש במבנה ביהס עם עליזה, ברוריה, איריס, אושרת, איציק, שמואל, מזכירות ואדיר. דיון על מיקום המזכירות, מיקום צהרון ורקע לגבי יום היערכות, צ'ופרים למורים ולתלמידים ליום הראשון וכן על טקס פתיחת שנה.","conclusions":"סדר יום היערכות והמשך בניית מערכת מול דורית","date":"2026-08-06","endTime":"11:30","id":"emsht0ha1xqtfg","time":"08:30","who":"צוות מנהלה וצביה"},{"activity":"שיחה עם איציק לגבי מיקום הארגזים עם בגדי החלפה שהיו בארונות בחד סגנית במבנה הזמני","conclusions":"הבגדים יהיו בחדר של רכזת חטיבה צעירה בקומה הראשונה","date":"2026-08-09","endTime":"09:00","id":"emsqaodkagjrpj","time":"08:30","who":"צביה ואיציק"},{"activity":"פגישה בבית הספר עם עליזה סגרנו כיתות אחראיות על טקסים, עברנו על לוז יום הערכות, נפגשנו ושוחחנו עם יובל אחראי עובדות עירייה, ועם אליהו פרץ אחראי תקשוב לגבי מיקום מקרנים/ מסכים במבנה של החטיבה הצעירה.\nבסיום השיחה עליזה ביקשה ממני להוציא קובץ לגבי הזמנת ציוד לצוות.","conclusions":"עליזה תברר לגבי תקציב להדפסת קישוטים למורים ולאחר שתיידע אותי אוציא הודעה מסודרת עם קובץ למורים","date":"2026-08-12","endTime":"09:45","id":"emsqasxyzgwria","time":"08:30","who":"צביה ועליזה"},{"activity":"שיחה עם עליזה לגבי הקצאת מחיר להדפסות לצוות המורים ופרסום תעריף של ההדפסה בנייר 80 גרם גודל a4 1.5 ש\"ח, ניילון 1 ש\"ח, בריסטול a4 3 ש\"ח, הכנתי קובץ פורמס למורים שירשמו שם את הציוד הנדרש להם ופרסמתי להם.","conclusions":"בנוסף לקובץ פורמס פרסמתי לבקשת עליזה שיש לשלוח גם לדבורה את רשימת הציוד.","date":"2026-08-12","endTime":"20:30","id":"emsw6l0pu6dezq","time":"20:00","who":"צביה ועליזה"},{"activity":"ברור מול חגית לגבי שמות המורים שהיו בוועד .המורים ב-3 שנים האחרונות והעברת השמות לעליזה. שליחת מייל לגבי ההצגות לעליזה ולדבורה","conclusions":"לתזכר את דבורה למלא את המייל ולהחתים את עליזה על מנת לשלוח בימים ראשון-שני מייל תשובה עם הטפסים סרוקים לגבי ההצגות","date":"2026-08-13","endTime":"09:00","id":"emsw6qa2pqa5ye","time":"08:00","who":"חגית, עליזה וצביה"},{"activity":"שיחה עם איציק לגבי סידור חדר המורים והכיתות, איציק שלח לי תמונה של חדר מורים מסודר","conclusions":"לא להוציא את הספות מחדר מורים","date":"2026-08-13","endTime":"14:00","id":"emsw6s13s63h2r","time":"13:30","who":"איציק וצביה"},{"activity":"שיחה עם דבורה לגבי המייל של ההצגות שצריך לחתום לסרוק ולשלוח חזרה","conclusions":"נשלח אצ המייל של ההצגו לאחר שעליזה תחזור לארץ","date":"2026-08-14","endTime":"09:00","id":"emsw6tlym9zuta","time":"08:30","who":"צביה ודבורה"},{"activity":"שיחה עם עליזה ועדכון לגבי ההצגות, בקשה של עליזה שאשלח בקשה למימון הסדנה שהזמינה מהסתדרות המורים ליום הערכות ביקשתי שתשלח לי פרטים ואכניס באתר בלשונית של יוזמים תרבות","conclusions":"אעשה ברור לגבי תקציב לסדנה ביום ראשון","date":"2026-08-14","endTime":"14:00","id":"emsw6wsqhujwxr","time":"13:30","who":"צביה ועליזה"},{"activity":"הזמנת ציוד, שיבוץ בלוח גאנט של תאריכי ימי לימוד של עליזה ומפגשי יועצות של ליענה, טלפונים וברור מול דבורה ועליזה ומילוי טופס באתר יוזמים תרבות על שם עליזה, עליזה ביקשה ממני להתקשר ולהודיע לאיציק לגבי שימשוניות שאנחנו צריכים לקבל למהעיריה לפתיחת שנה. יידעתי את איציק שהוא צריך ללכת לעירייה לקחת 2 שימשוניות ביום שלישי בין השעות 9-10.","conclusions":"איציק ילך לעירייה ביום שלישי לקחת את השימשוניות","date":"2026-08-16","endTime":"12:00","id":"emsw71fxct9dvx","time":"09:00","who":"צביה, דבורה, עליזה, איציק"},{"activity":"היום הייתי בביהס לארגן מספר דברים להלן מספר עדכונים:\n📌שלחתי אישור חתום להזמנת עבודה למייל של וואיטק.\n📌נשלח מייל לגבי תאריך חלופי לשיעור שחיה שחל בעשרה בטבת וקיבלתי תשובה שנקבל בהמשך תאריך חלופי מעודכן.\n📌עשיתי סיור עם אליהו פרץ לגבי חוסר התאמה בשטח להתקנת מקרנים ומחשבים במספר כיתות שוחחנו עם זיוה ואביעד וקבענו שמחר אביעד יגיע למבנה לסיור על מנת לראות איך אפשר לסדר את הדברים.","conclusions":"מחר אליהו פרץ יעשה סיור במבנה עם אביעד ואליאב","date":"2026-08-18","endTime":"13:00","id":"emsympqpzpi7ny","time":"08:30","who":"אליהו פרץ, איציק, דבורה , צביה"},{"activity":"זום לאישור חוג תורני, עליזה בחופשה בחול וביקשה ממני להיות נוכחת במפגש זום למנהלים לגבי חוג תורני בביהס.","conclusions":"יש לתאם מפגש זום פרטני עם הרב שחר לוי לתאם ולסגור את עניין החוג תורני","date":"2026-08-19","endTime":"15:45","id":"emt22djq3n1ml0","time":"15:00","who":"צביה בזום למנהלים"},{"activity":"סיור עם איציק לגבי נקיון הפרוזדורים מלשלשת ע\"י מנקים וטיפות המים החודרות מקומה אחת אחרת...\nפריקת כל הארגזים שבכיתתי בעזרת הדסי","conclusions":"נשוחח עם העירייה לגבי המים בשיפועים","date":"2026-08-20","endTime":"15:30","id":"emt22gjbafrmsi","time":"11:00","who":"צביה"},{"activity":"שיחה עם איציק עדכון לגבי הסייעות שהגיעו לארגן את הספריה.\nשיחה עם שושי לגבי ארגון ספרי הלימוד.\nשיחה עם כרמית שתשוחח עם שושי לגבי אופן ארגון ספרי הלימוד ותשלח לה את הרשימה של ספרי הלימוד שצריך לכל שכבה.","conclusions":"כרמית תשוחח עם שושי ותגיע ביום שלישי לביהס.","date":"2026-08-23","endTime":"10:30","id":"emt5ufgkd0j73v","time":"09:30","who":"איציק,שושי הרוש, כרמית, צביה"},{"activity":"עדכון לעליזה ודורית לגבי ספרי הלימוד וספרי ספריה","conclusions":"עליזה תדבר עם יובל מהעיריה שישלח סיוע נוסף לארגון הספרים","date":"2026-08-23","endTime":"16:30","id":"emt5ukg8pbpz2z","time":"15:30","who":"דורית, עליזה וצביה"},{"activity":"סיור עם קובי מהעיריה ועם הארכיטקטית לגבי מיקום חדר סגנית","conclusions":"יבדקו מול הרשות הכין למקם את החדר","date":"2026-08-24","endTime":"10:30","id":"emt73ggwqfpij8","time":"09:45","who":"צביה, עליזה, איציק, קובי וארכיטקטית"},{"activity":"ישיבה עם הייא אחות בי\"ס, קביעת תאריכים לחיסונים לכלל הכיתות בלוח גאנט. הכנת שילוט לגבי אלרגיה, איסור עישון, יש לדאוד לתליית מזרק אפיפן שיחחנו גם עם איציק על כך, יש לציין וליידע את המחנכים שבאסיפת ההורים ידגישו לגבי חיסונים מי שמתנגד יש ליידע מראש מי שלא יידע על כך ילדו יתחסן. בנוסף כשיהיה שבוע בריאות ניתן לשלב את הייא בשבוע זה להרצאה","conclusions":"נזמין שילוט לביה\"ס וכן ונתאם מועדים נוספים להדרכה לחינוך לבריאות בנושא הגיינה","date":"2026-08-24","endTime":"12:00","id":"emt73lk1fdqe6q","time":"10:30","who":"צביה והייא"},{"activity":"📌איציק ואני עלינו למבנה הישן והבאנו הרבה סידורים שהיו של התלמידים, ועוד כמה דברים שהיו שם ויכולים לשמש אותנו.\n📌דורית, אדיר ואני המשכנו הבוקר בסיור במבנה. חשוב לייעד את שירותי הנכים שנמצאים ליד שירותי המורים לגברים, מטעמי צניעות. \n📌יובל התקשר לאיציק ושוחחתי איתו לגבי הסיוע בארגון הספרים. בפועל רק אורטל דידי הגיעה, והסברתי לה מה צריך לארגן ולסדר בספרייה.\nחשוב לציין שיש הרבה סידורים של סליחות, ואפשר לנצל אותם ולתת לכיתות הגבוהות להתפלל בהם עד כיפור איידע גם את הרב שלומי.\n📌פגשתי גם את זיוה במבנה, והיא אמרה שצריך להזמין טושים מיוחדים ללוחות. שוחחתי על כך עם חנה, חשוב לדאוג להזמין טושים כאלה עבור המורים.\nבנוסף, זיוה דיברה איתי על החשיבות של פיצול הכיתה בשיעורי חשבון ושפה, במיוחד בגלל גודל הכיתה והפערים בין הרמות. היא ביקשה שאשוחח איתך על כך,הפיצול יאפשר לתת מענה מדויק יותר לרמות השונות בכיתה ולצמצם פערים.","conclusions":"עליזה תבדוק לגבי שעות לתגבור","date":"2026-08-25","endTime":"13:45","id":"emta7n422441jh","time":"08:15","who":"איציק, אדיר, דורית, עליזה, יובל מהעיריה, אוטל דידי,"},{"activity":"יום הערכות.\nהדרכתי את נטלי והודיה הסייעות לגבי ארגון ארגזים בחדר אמנות ובמעבדה.\nהדרכתימאת שמואל ואיציק לגבי מיקום של ציוד של אזניות ומצלמות בחדר מחשבים.\nמצאתי את המקלדת של דינמיקלאס והשארתי אצל דבורה שתשמור.\nארגנתי עם שמואל את כל הכיבוד לאחר יום ההערכות.\nעשיתי סיור עם נילי מטפלת לגבי מיקום חדרי טיפול.\nבדקתי באתר הסתדרות המורים לגבי מימון הפעילות של היום הערכות ושלחתי לעליזה צילומי מסך לגבי ההסבר וכן שתדאג שישלחו לי את הקבלה סרוקה כדי שאכניס באתר.","conclusions":"עליזה צריכה לשלוח לי חשבונית של המפעיל על מנת שאשלח באתר הסתדרות המורים","date":"2026-08-26","endTime":"16:00","id":"emta7tqnlqk5ty","time":"08:30","who":"איציק, שמואל, נילי, צוות ביהס"},{"id":"emtt05p4jx7cwl","date":"2026-09-08","time":"18:00","endTime":"18:30","activity":"היום אסיפת הורים עליזה שלחה לי הודעה מה קורה לגבי מירוץ קרית אתא.\nיידעתי אותה שהעברתי את הקובץ ששלחה בעניין למורה לספורט לטיפול בתאריך 27.8 המורה חספורט שלחה לי תשובה בתאריך 30.8 וסגרנו שהשכבה שתצא תהיה כיתות ו.\nעליזה רצתה לדעת איפה זה עומד אמרתי לה שאברר מול המורה לספורט.\nסגרתי עם המורה לספורט שטפל ותסגור את הפרטים ותיידע את עליזה בהקדם.\nתוך כדי עליזה נפגשה עם המורה אילונה ושוחחה איתה על מה שצריך לסגור.\nצוך כדי שיחה של עחיזה עם אילונה עליזה שלחה לי הודעות שאני צריכה לבדוק מה קורה עם זה ולסגור עם אילונה כשהיא יושבת איתה בשיחה.\nיש לי ציעוד בווטסאפ של התכתבות שאילונה כותבת לי שהיא יושבת עכשיו עם עליזההועליזה תוך כדי פגישה איתה באותה שעה כותבת לי חסגור עם אילונה את הדברים.\nתיעוד בהודעות ווטסאפ עם עליזה ואילונה בתאריך 8.9 בשעה 18:00.\nהתקשרתי חעליזה ואמרתי שאם היא כבר משוחחת עם אילונה מדוע היא תוך כדי שיחה שולחתתלי לסגור את זה עם אילונה??? ניצן לראות כאן חוסר אמון וזילזול.","who":"","conclusions":""}];/*SEED_END*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" onerror="window.__fbScriptFailed='firebase-app-compat.js לא נטען (חסום או שאין אינטרנט)'"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js" onerror="window.__fbScriptFailed='firebase-database-compat.js לא נטען (חסום או שאין אינטרנט)'"></script>
+<script>
+(function () {
+  // Capture a clean copy of this file's original markup (before any rendering happens)
+  // so we can later re-embed the current data into a fresh downloadable copy of the app.
+  const ORIGINAL_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+  const STORAGE_KEY = 'work-log-entries';
+  const DRAFT_KEY = 'work-log-draft';
+  const LAST_BACKUP_KEY = 'work-log-last-backup';
+  let backupReminderDismissed = false;
+  const DRAFT_FIELD_IDS = ['f-date', 'f-time', 'f-end-time', 'f-activity', 'f-who', 'f-conclusions'];
+  let entries = [];
+  let monthFilter = 'all';
+  let analysisResultHtml = '';
+  let analysisResultText = '';
+  let analysisError = '';
+  let includeAnalysisInExport = false;
+  let loaded = false;
+  let loadError = false;
+  let editingId = null;
+  let formAttachments = []; // [{id, name, dataUrl}] — pending photos for the entry currently in the form
+  let docxFileName = null;
+  let docxLoading = false;
+  let docxError = '';
+  let reviewEntries = null; // array of parsed entries pending confirmation
+  let reviewSource = ''; // 'table' | 'freeform'
+  let seedBannerEntries = null; // entries embedded in this file, offered for import
+
+  // ---- Cloud sync (Firebase Realtime Database) ----
+  // Lets the same journal stay in sync across multiple devices (phone / computer).
+  // Falls back silently to local-only storage if the network or Firebase is unavailable.
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVFh_zF8XyouQyuIt9pUwLQsn9Cghh5h4",
+    authDomain: "worksheet-36171.firebaseapp.com",
+    databaseURL: "https://worksheet-36171-default-rtdb.firebaseio.com",
+    projectId: "worksheet-36171",
+    storageBucket: "worksheet-36171.firebasestorage.app",
+    messagingSenderId: "39688276154",
+    appId: "1:39688276154:web:8f9a91117f6f84ff069a83"
+  };
+  let fbEnabled = false;
+  let fbEntriesRef = null;
+  let fbLoaded = false; // becomes true only after we've seen the real cloud state at least once
+  let syncState = 'disabled'; // 'disabled' | 'connecting' | 'online' | 'offline' | 'unavailable'
+  let fbErrorDetail = ''; // human-readable reason sync is unavailable, shown in the badge tooltip
+  try {
+    if (window.__fbScriptFailed) {
+      // The <script> tags for the Firebase SDK never finished downloading — most likely
+      // blocked by an ad/privacy blocker, offline at page-load time, or a captive network.
+      fbErrorDetail = window.__fbScriptFailed;
+      syncState = 'unavailable';
+    } else if (window.firebase && typeof firebase.initializeApp === 'function') {
+      firebase.initializeApp(firebaseConfig);
+      fbEntriesRef = firebase.database().ref('entries');
+      fbEnabled = true;
+      syncState = 'connecting';
+    } else {
+      fbErrorDetail = 'ספריית הסנכרון (Firebase) לא נטענה בדפדפן הזה';
+      syncState = 'unavailable';
+    }
+  } catch (e) {
+    fbEnabled = false;
+    fbErrorDetail = (e && e.message) ? e.message : String(e);
+    syncState = 'unavailable';
+  }
+
+  let lastSyncedAt = null; // Date of the last write/read the cloud actually confirmed
+  let lastSyncedSnapshot = null; // {id: entryObj, ...} — last cloud state we know is true.
+                                  // Every save is diffed against this, so we only ever
+                                  // write/remove the specific ids that actually changed —
+                                  // never the whole list.
+
+  function byId(list) {
+    const map = {};
+    (list || []).forEach(e => { if (e && e.id) map[e.id] = e; });
+    return map;
+  }
+
+  function setSyncState(state) {
+    syncState = state;
+    const el = document.getElementById('sync-badge');
+    if (!el) return;
+    el.className = 'sync-badge sync-' + state;
+    el.textContent = syncBadgeText(state);
+  }
+
+  function syncBadgeText(state) {
+    const time = lastSyncedAt
+      ? lastSyncedAt.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+      : '';
+    switch (state) {
+      case 'online': return time ? `☁️ מסונכרן (אושר בענן ${time})` : '☁️ מסונכרן';
+      case 'saving': return '☁️ שומר בענן…';
+      case 'connecting': return '☁️ מתחבר…';
+      case 'offline': return '⚠️ לא מחובר לענן (מקומי בלבד)';
+      case 'unavailable': return `⚠️ סנכרון לא זמין${fbErrorDetail ? ' — ' + fbErrorDetail : ''}`;
+      default: return '';
+    }
+  }
+
+  function initFirebaseSync() {
+    if (!fbEnabled || !fbEntriesRef) return;
+    fbEntriesRef.on('value', snapshot => {
+      const remote = snapshot.val();
+      const wasFirstSync = !fbLoaded;
+      fbLoaded = true;
+
+      if (remote === null || remote === undefined) {
+        // Cloud is genuinely empty (real first-ever run) — safe to seed it from this device.
+        lastSyncedSnapshot = {};
+        if (wasFirstSync && entries.length) {
+          const seedMap = byId(entries);
+          setSyncState('saving');
+          fbEntriesRef.update(seedMap).then(() => {
+            lastSyncedAt = new Date();
+            lastSyncedSnapshot = seedMap;
+            setSyncState('online');
+          }).catch(() => setSyncState('offline'));
+        } else {
+          lastSyncedAt = new Date();
+          setSyncState('online');
+        }
+        return;
+      }
+
+      // Older versions of this file wrote the whole list as an array. Read it the same
+      // way, but re-save it as an id-keyed object so future saves can be per-record.
+      const isLegacyArray = Array.isArray(remote);
+      const remoteMap = isLegacyArray ? byId(remote.filter(Boolean)) : remote;
+      entries = Object.values(remoteMap);
+      lastSyncedSnapshot = remoteMap;
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch (e) { /* ignore */ }
+      lastSyncedAt = new Date();
+      setSyncState('online');
+      render();
+      if (isLegacyArray) {
+        fbEntriesRef.set(remoteMap).catch(() => {}); // one-time, content-identical migration
+      }
+    }, () => {
+      setSyncState('offline');
+    });
+  }
+
+  function retrySync() {
+    if (fbEnabled && fbEntriesRef) {
+      // Detach and re-attach the listener to force a fresh connection attempt
+      // (e.g. after the network came back, or a temporary permission hiccup).
+      try { fbEntriesRef.off(); } catch (e) { /* ignore */ }
+      fbLoaded = false;
+      setSyncState('connecting');
+      initFirebaseSync();
+    } else {
+      // The Firebase SDK itself never loaded (blocked / no internet at page-load time).
+      // A full reload is the only way to give the <script> tags another chance.
+      window.location.reload();
+    }
+  }
+
+  // ---- App lock (4-digit PIN) ----
+  // Not real cryptographic protection (a 4-digit code can't be) — it's a screen lock,
+  // meant to stop a casual viewer of the file from browsing the journal, not a determined
+  // attacker going straight at the database. See conversation with Claude for that distinction.
+  const SESSION_UNLOCK_KEY = 'worklog-unlocked';
+  const LOCAL_SECURITY_KEY = 'worklog-security'; // fallback only if Firebase is unavailable
+  let fbSecurityRef = null;
+  if (fbEnabled) {
+    try { fbSecurityRef = firebase.database().ref('security'); } catch (e) { fbSecurityRef = null; }
+  }
+  let securityState = 'loading'; // 'loading' | 'setup' | 'locked' | 'unlocked' | 'recover' | 'reset'
+  let security = null; // { pinHash, recoveryHash }
+  let lockError = '';
+  let recoveryError = '';
+
+  function simpleHash(str) {
+    // Lightweight fingerprint, not cryptography — good enough to avoid storing the PIN as plain text.
+    let h = 5381;
+    const s = String(str);
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    return h.toString(36);
+  }
+
+  function loadLocalSecurity() {
+    try {
+      const raw = localStorage.getItem(LOCAL_SECURITY_KEY);
+      security = raw ? JSON.parse(raw) : null;
+    } catch (e) { security = null; }
+  }
+
+  function saveLocalSecurity() {
+    try { localStorage.setItem(LOCAL_SECURITY_KEY, JSON.stringify(security)); } catch (e) { /* ignore */ }
+  }
+
+  function resolveSecurityState() {
+    if (!security || !security.pinHash) {
+      securityState = 'setup';
+    } else if (sessionStorage.getItem(SESSION_UNLOCK_KEY) === '1') {
+      securityState = 'unlocked';
+    } else {
+      securityState = 'locked';
+    }
+    render();
+  }
+
+  function initSecurity() {
+    if (fbSecurityRef) {
+      fbSecurityRef.on('value', snapshot => {
+        security = snapshot.val() || null;
+        resolveSecurityState();
+      }, () => {
+        loadLocalSecurity();
+        resolveSecurityState();
+      });
+    } else {
+      loadLocalSecurity();
+      resolveSecurityState();
+    }
+  }
+
+  function submitSetupPin() {
+    const pin1 = (document.getElementById('setup-pin-1')?.value || '').trim();
+    const pin2 = (document.getElementById('setup-pin-2')?.value || '').trim();
+    const recovery = (document.getElementById('setup-recovery')?.value || '').trim();
+    lockError = '';
+    if (!/^\d{4}$/.test(pin1)) { lockError = 'הקוד חייב להיות בדיוק 4 ספרות.'; render(); return; }
+    if (pin1 !== pin2) { lockError = 'שני הקודים שהוקלדו אינם זהים.'; render(); return; }
+    if (!recovery) { lockError = 'נא למלא גם מילת שחזור, לשימוש אם תשכחי את הקוד.'; render(); return; }
+    security = { pinHash: simpleHash(pin1), recoveryHash: simpleHash(recovery.toLowerCase()) };
+    if (fbSecurityRef) { fbSecurityRef.set(security).catch(() => saveLocalSecurity()); } else { saveLocalSecurity(); }
+    sessionStorage.setItem(SESSION_UNLOCK_KEY, '1');
+    securityState = 'unlocked';
+    render();
+  }
+
+  function submitPin() {
+    const pin = (document.getElementById('lock-pin')?.value || '').trim();
+    lockError = '';
+    if (!security || simpleHash(pin) !== security.pinHash) {
+      lockError = 'קוד שגוי, נסי שוב.';
+      render();
+      return;
+    }
+    sessionStorage.setItem(SESSION_UNLOCK_KEY, '1');
+    securityState = 'unlocked';
+    render();
+  }
+
+  function goToRecovery() { securityState = 'recover'; lockError = ''; recoveryError = ''; render(); }
+  function backToLock() { securityState = 'locked'; lockError = ''; recoveryError = ''; render(); }
+
+  function submitRecovery() {
+    const answer = (document.getElementById('recovery-answer')?.value || '').trim();
+    recoveryError = '';
+    if (!security || simpleHash(answer.toLowerCase()) !== security.recoveryHash) {
+      recoveryError = 'התשובה לא נכונה.';
+      render();
+      return;
+    }
+    securityState = 'reset';
+    render();
+  }
+
+  function submitNewPin() {
+    const pin1 = (document.getElementById('reset-pin-1')?.value || '').trim();
+    const pin2 = (document.getElementById('reset-pin-2')?.value || '').trim();
+    lockError = '';
+    if (!/^\d{4}$/.test(pin1)) { lockError = 'הקוד חייב להיות בדיוק 4 ספרות.'; render(); return; }
+    if (pin1 !== pin2) { lockError = 'שני הקודים שהוקלדו אינם זהים.'; render(); return; }
+    security = { pinHash: simpleHash(pin1), recoveryHash: security.recoveryHash };
+    if (fbSecurityRef) { fbSecurityRef.set(security).catch(() => saveLocalSecurity()); } else { saveLocalSecurity(); }
+    sessionStorage.setItem(SESSION_UNLOCK_KEY, '1');
+    securityState = 'unlocked';
+    render();
+  }
+
+  function renderLockScreen() {
+    let inner = '';
+    if (securityState === 'loading') {
+      inner = `<div class="loading">טוען…</div>`;
+    } else if (securityState === 'setup') {
+      inner = `
+        <div class="wrap" style="max-width:420px; padding-top:60px;">
+          <div class="card">
+            <h2>הגדרת קוד כניסה</h2>
+            <p style="color:var(--muted); font-size:13.5px; margin-top:-8px;">בחרי קוד בן 4 ספרות. הוא יידרש בכל מכשיר בכל פעם שנפתח היומן מחדש.</p>
+            <label>קוד (4 ספרות)</label>
+            <input type="text" inputmode="numeric" maxlength="4" id="setup-pin-1" placeholder="••••">
+            <div style="height:10px;"></div>
+            <label>אימות הקוד</label>
+            <input type="text" inputmode="numeric" maxlength="4" id="setup-pin-2" placeholder="••••">
+            <div style="height:10px;"></div>
+            <label>מילת שחזור (למקרה ששכחת את הקוד)</label>
+            <input type="text" id="setup-recovery" placeholder="מילה שתזכרי לבד">
+            ${lockError ? `<p style="color:var(--danger); font-size:13px; margin-top:10px;">${escapeHtml(lockError)}</p>` : ''}
+            <div class="add-row"><button class="export-btn" id="setup-submit-btn">שמירה והפעלה</button></div>
+          </div>
+        </div>`;
+    } else if (securityState === 'locked') {
+      inner = `
+        <div class="wrap" style="max-width:360px; padding-top:90px; text-align:center;">
+          <div class="card">
+            <h2 style="justify-content:center;">🔒 יומן עבודה נעול</h2>
+            <input type="text" inputmode="numeric" maxlength="4" id="lock-pin" placeholder="••••" style="text-align:center; font-size:22px; letter-spacing:8px;">
+            ${lockError ? `<p style="color:var(--danger); font-size:13px; margin-top:10px;">${escapeHtml(lockError)}</p>` : ''}
+            <div class="add-row" style="justify-content:center;"><button class="export-btn" id="lock-submit-btn">כניסה</button></div>
+            <p style="margin-top:14px;"><a href="#" id="forgot-pin-link" style="color:var(--muted); font-size:13px;">שכחתי קוד</a></p>
+          </div>
+        </div>`;
+    } else if (securityState === 'recover') {
+      inner = `
+        <div class="wrap" style="max-width:400px; padding-top:90px;">
+          <div class="card">
+            <h2>שחזור קוד</h2>
+            <label>מילת השחזור שבחרת בהתקנה</label>
+            <input type="text" id="recovery-answer" placeholder="מילת שחזור">
+            ${recoveryError ? `<p style="color:var(--danger); font-size:13px; margin-top:10px;">${escapeHtml(recoveryError)}</p>` : ''}
+            <div class="add-row"><button class="export-btn" id="recovery-submit-btn">אישור</button></div>
+            <p style="margin-top:14px; font-size:12.5px; color:var(--muted);">שכחת גם את מילת השחזור? היכנסי ל-console.firebase.google.com לפרויקט שלך ← Realtime Database ← מחקי את הענף בשם "security" ← רעננ/י את הדף כאן, ותוכלי להגדיר קוד חדש מאפס.</p>
+            <p><a href="#" id="back-to-lock-link" style="color:var(--muted); font-size:13px;">חזרה</a></p>
+          </div>
+        </div>`;
+    } else if (securityState === 'reset') {
+      inner = `
+        <div class="wrap" style="max-width:420px; padding-top:70px;">
+          <div class="card">
+            <h2>קביעת קוד חדש</h2>
+            <label>קוד חדש (4 ספרות)</label>
+            <input type="text" inputmode="numeric" maxlength="4" id="reset-pin-1" placeholder="••••">
+            <div style="height:10px;"></div>
+            <label>אימות הקוד החדש</label>
+            <input type="text" inputmode="numeric" maxlength="4" id="reset-pin-2" placeholder="••••">
+            ${lockError ? `<p style="color:var(--danger); font-size:13px; margin-top:10px;">${escapeHtml(lockError)}</p>` : ''}
+            <div class="add-row"><button class="export-btn" id="reset-submit-btn">שמירה</button></div>
+          </div>
+        </div>`;
+    }
+    root.innerHTML = inner;
+
+    document.getElementById('setup-submit-btn')?.addEventListener('click', submitSetupPin);
+    document.getElementById('lock-submit-btn')?.addEventListener('click', submitPin);
+    document.getElementById('lock-pin')?.addEventListener('keydown', ev => { if (ev.key === 'Enter') submitPin(); });
+    document.getElementById('forgot-pin-link')?.addEventListener('click', ev => { ev.preventDefault(); goToRecovery(); });
+    document.getElementById('back-to-lock-link')?.addEventListener('click', ev => { ev.preventDefault(); backToLock(); });
+    document.getElementById('recovery-submit-btn')?.addEventListener('click', submitRecovery);
+    document.getElementById('reset-submit-btn')?.addEventListener('click', submitNewPin);
+  }
+
+  const root = document.getElementById('app-root');
+
+  function uid() {
+    return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function fmtDateDisplay(iso) {
+    if (!iso) return '—';
+    const [y, m, d] = iso.split('-');
+    return `${d}.${m}.${y.slice(2)}`;
+  }
+
+  function updateSaveReminder() {
+    const banner = document.getElementById('save-reminder-banner');
+    if (!banner) return;
+    const timeVal = document.getElementById('f-time')?.value || '';
+    const activityVal = document.getElementById('f-activity')?.value || '';
+    const whoVal = document.getElementById('f-who')?.value || '';
+    const conclusionsVal = document.getElementById('f-conclusions')?.value || '';
+    const hasContent = timeVal.trim() || activityVal.trim() || whoVal.trim() || conclusionsVal.trim();
+    if (hasContent) {
+      banner.textContent = `⚠️ לא לשכוח ללחוץ על "${editingId ? 'עדכן רשומה' : 'הוסף רשומה'}"!`;
+      banner.style.display = 'block';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  // ---- Draft auto-save: protects against typing an entry and forgetting to click "save" ----
+  function saveDraft() {
+    updateSaveReminder();
+    if (editingId) return; // don't clobber the new-entry draft while editing an existing one
+    const activity = document.getElementById('f-activity')?.value || '';
+    const who = document.getElementById('f-who')?.value || '';
+    const conclusions = document.getElementById('f-conclusions')?.value || '';
+    if (!activity.trim() && !who.trim() && !conclusions.trim()) {
+      clearDraft();
+      return;
+    }
+    const draft = {};
+    DRAFT_FIELD_IDS.forEach(id => {
+      draft[id] = document.getElementById(id)?.value || '';
+    });
+    draft.savedAt = new Date().toISOString();
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch (e) { /* ignore storage errors */ }
+  }
+
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* ignore */ }
+  }
+
+  function restoreDraftIfAny() {
+    let draft;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      draft = JSON.parse(raw);
+    } catch (e) { return; }
+    if (!draft || (!draft['f-activity'] && !draft['f-who'] && !draft['f-conclusions'])) return;
+    DRAFT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && draft[id] !== undefined) el.value = draft[id];
+    });
+    setStatus('שוחזרה טיוטה שלא נשמרה מהפעם הקודמת — בדקי ולחצי "הוסף" כדי לשמור ✓', false);
+    updateSaveReminder();
+  }
+
+  function getDaysSinceBackup() {
+    let refIso = null;
+    try { refIso = localStorage.getItem(LAST_BACKUP_KEY); } catch (e) { /* ignore */ }
+    if (!refIso) {
+      const list = sortedEntries();
+      if (!list.length) return null;
+      refIso = list[0].date; // earliest entry date, as a fallback reference point
+    }
+    const refDate = new Date(refIso);
+    if (isNaN(refDate.getTime())) return null;
+    const diffMs = Date.now() - refDate.getTime();
+    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  }
+
+  function dismissBackupReminder() {
+    backupReminderDismissed = true;
+    render();
+  }
+
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function loadEntries() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const seed = Array.isArray(window.__SEED_ENTRIES__) ? window.__SEED_ENTRIES__ : [];
+      if (raw) {
+        entries = JSON.parse(raw);
+        // This file also carries embedded data (e.g. it was received by email) —
+        // offer to import it instead of silently overwriting what's already on this device.
+        if (seed.length) {
+          seedBannerEntries = seed;
+        }
+      } else if (seed.length) {
+        entries = seed.slice();
+        saveEntries();
+        setStatus(`נטענו ${entries.length} רשומות מתוך הקובץ ✓`, false);
+      } else {
+        entries = [];
+      }
+    } catch (e) {
+      entries = [];
+    }
+    loaded = true;
+    render();
+    initFirebaseSync();
+  }
+
+  function importSeedBanner() {
+    if (!seedBannerEntries) return;
+    const ok = window.confirm(`הקובץ הזה מכיל ${seedBannerEntries.length} רשומות מובנות. לייבא אותן למכשיר הזה? זה יחליף את ${entries.length} הרשומות הקיימות (כולל בענן, אצל כל המכשירים המסונכרנים).`);
+    if (!ok) return;
+    entries = seedBannerEntries.slice();
+    seedBannerEntries = null;
+    saveEntries();
+    setStatus('הנתונים מהקובץ יובאו ✓', false);
+    render();
+  }
+
+  function dismissSeedBanner() {
+    seedBannerEntries = null;
+    render();
+  }
+
+  function saveEntries() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      setStatus('נשמר ✓', false);
+    } catch (e) {
+      setStatus('שמירה נכשלה — הרשומה עדיין מוצגת אך ייתכן שלא תישמר לפעם הבאה.', true);
+    }
+
+    if (!(fbEnabled && fbEntriesRef && fbLoaded)) return;
+
+    const currentMap = byId(entries);
+    const priorMap = lastSyncedSnapshot || {};
+    const patch = {};
+    let changed = false;
+
+    // New or edited records — writes only touch these specific ids.
+    Object.keys(currentMap).forEach(id => {
+      if (JSON.stringify(currentMap[id]) !== JSON.stringify(priorMap[id])) {
+        patch[id] = currentMap[id];
+        changed = true;
+      }
+    });
+
+    // Records removed on this device since the last confirmed cloud state — these are the
+    // only ids ever deleted from the cloud, and only because deleteEntry() already asked
+    // for explicit confirmation before removing them from `entries` above.
+    Object.keys(priorMap).forEach(id => {
+      if (!(id in currentMap)) {
+        patch[id] = null; // null in a multi-path update removes just that one path
+        changed = true;
+      }
+    });
+
+    if (!changed) return;
+
+    setSyncState('saving');
+    fbEntriesRef.update(patch)
+      .then(() => {
+        lastSyncedAt = new Date();
+        lastSyncedSnapshot = currentMap;
+        setSyncState('online');
+      })
+      .catch(() => {
+        setSyncState('offline');
+        setStatus('נשמר במכשיר, אך הסנכרון לענן נכשל (בדקי חיבור לאינטרנט).', true);
+      });
+  }
+
+  function setStatus(msg, isError) {
+    const el = document.getElementById('status-msg');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'status-msg' + (isError ? ' error' : '');
+    if (!isError && msg) {
+      setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 2500);
+    }
+  }
+
+  function getMonthKey(dateStr) {
+    return (dateStr || '').slice(0, 7); // 'YYYY-MM'
+  }
+
+  function monthLabel(key) {
+    const [y, m] = key.split('-');
+    const idx = parseInt(m, 10) - 1;
+    return `${HEBREW_MONTHS[idx] || m} ${y}`;
+  }
+
+  function setMonthFilter(value) {
+    monthFilter = value;
+    render();
+  }
+
+  function whoTokens(whoStr) {
+    return (whoStr || '').split(/[,،]/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function getAllWhoTokens() {
+    const set = new Set();
+    entries.forEach(e => whoTokens(e.who).forEach(n => set.add(n)));
+    return Array.from(set);
+  }
+
+  function getFrequentWho(limit) {
+    const counts = {};
+    entries.forEach(e => whoTokens(e.who).forEach(n => { counts[n] = (counts[n] || 0) + 1; }));
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, limit);
+  }
+
+  function nowTimeStr() {
+    const d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function setTimeNow(targetId) {
+    const el = document.getElementById(targetId);
+    if (el) el.value = nowTimeStr();
+    saveDraft();
+  }
+
+  function applyQuickWho(name) {
+    const dateEl = document.getElementById('f-date');
+    const timeEl = document.getElementById('f-time');
+    const whoEl = document.getElementById('f-who');
+    if (dateEl && !dateEl.value) dateEl.value = new Date().toISOString().slice(0, 10);
+    if (timeEl && !timeEl.value) timeEl.value = nowTimeStr();
+    if (whoEl) whoEl.value = name;
+    document.getElementById('f-activity')?.focus();
+    saveDraft();
+  }
+
+  function duplicateLastEntry() {
+    const last = sortedEntries().slice(-1)[0];
+    if (!last) return;
+    document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('f-time').value = '';
+    document.getElementById('f-end-time').value = '';
+    document.getElementById('f-activity').value = last.activity || '';
+    document.getElementById('f-who').value = last.who || '';
+    document.getElementById('f-conclusions').value = '';
+    document.getElementById('f-activity').focus();
+    saveDraft();
+    setStatus('שוכפלו הפרטים מהרשומה האחרונה — ניתן לערוך ולהוסיף ✓', false);
+  }
+
+  // ---- Quick rule-based analysis: scans conclusions/activity text for open-item keywords ----
+  const OPEN_ITEM_KEYWORDS = ['לבדוק', 'לתאם', 'לברר', 'ממתין', 'טרם', 'עדיין לא', 'יש לוודא', 'צריך', 'לשלוח', 'לעדכן', 'לסגור', 'להשלים', 'נדרש', 'לאתר'];
+
+  function runQuickAnalysis() {
+    analysisError = '';
+    const list = sortedEntries();
+    const byWho = {};
+    list.forEach(e => {
+      const text = [e.conclusions, e.activity].filter(Boolean).join('. ');
+      const sentences = text.split(/[\.\n]+/).map(s => s.trim()).filter(Boolean);
+      sentences.forEach(s => {
+        if (OPEN_ITEM_KEYWORDS.some(k => s.includes(k))) {
+          const owners = whoTokens(e.who).length ? whoTokens(e.who) : ['ללא שיוך'];
+          owners.forEach(owner => {
+            if (!byWho[owner]) byWho[owner] = [];
+            if (!byWho[owner].some(item => item.text === s)) {
+              byWho[owner].push({ date: e.date, text: s });
+            }
+          });
+        }
+      });
+    });
+    const owners = Object.keys(byWho).sort((a, b) => byWho[b].length - byWho[a].length);
+    if (!owners.length) {
+      analysisResultHtml = '<div class="empty-state">לא זוהו משימות פתוחות בטקסט הקיים. ניסוח מסקנות עם מילים כמו "לבדוק" / "לתאם" / "ממתין ל" יעזור לזיהוי האוטומטי.</div>';
+      analysisResultText = '';
+      render();
+      return;
+    }
+    let html = '<div class="analysis-block"><h3>משימות פתוחות לפי גורם</h3>';
+    let text = 'משימות פתוחות לפי גורם (זיהוי אוטומטי):\n';
+    owners.forEach(owner => {
+      html += `<div class="owner-group"><b>${escapeHtml(owner)}</b><ul>`;
+      text += `\n${owner}:\n`;
+      byWho[owner].forEach(item => {
+        html += `<li>${escapeHtml(fmtDateDisplay(item.date))} — ${escapeHtml(item.text)}</li>`;
+        text += `- ${fmtDateDisplay(item.date)}: ${item.text}\n`;
+      });
+      html += '</ul></div>';
+    });
+    html += '</div>';
+    analysisResultHtml = html;
+    analysisResultText = text;
+    render();
+  }
+
+  // ---- AI-powered deep analysis was removed: no API key on hand ----
+
+  function toggleIncludeAnalysis(checked) {
+    includeAnalysisInExport = checked;
+  }
+
+  function sortedEntries() {
+    return [...entries].sort((a, b) => {
+      const da = a.date || '', db = b.date || '';
+      if (da !== db) return da.localeCompare(db);
+      return (a.time || '').localeCompare(b.time || '');
+    });
+  }
+
+  function handleAttachmentFiles(fileList) {
+    const files = Array.from(fileList || []).filter(f => f.type && f.type.startsWith('image/'));
+    if (!files.length) return;
+    const statusEl = document.getElementById('attach-status');
+    if (statusEl) statusEl.textContent = `מעבדת ${files.length} תמונות...`;
+    Promise.all(files.map(f => resizeImageFile(f).then(dataUrl => ({ id: uid(), name: f.name, dataUrl })).catch(() => null)))
+      .then(results => {
+        results.filter(Boolean).forEach(a => formAttachments.push(a));
+        const failed = results.length - results.filter(Boolean).length;
+        if (failed) setStatus(`${failed} תמונות לא נטענו בהצלחה.`, true);
+        const input = document.getElementById('f-attachments');
+        if (input) input.value = '';
+        render();
+      });
+  }
+
+  function resizeImageFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(reader.error);
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('image load failed'));
+        img.onload = () => {
+          const MAX_DIM = 1280;
+          let width = img.naturalWidth, height = img.naturalHeight;
+          if (width > MAX_DIM || height > MAX_DIM) {
+            if (width >= height) { height = Math.round(height * (MAX_DIM / width)); width = MAX_DIM; }
+            else { width = Math.round(width * (MAX_DIM / height)); height = MAX_DIM; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function removeFormAttachment(id) {
+    formAttachments = formAttachments.filter(a => a.id !== id);
+    render();
+  }
+
+  function clearForm() {
+    document.getElementById('f-time').value = '';
+    document.getElementById('f-end-time').value = '';
+    document.getElementById('f-activity').value = '';
+    document.getElementById('f-who').value = '';
+    document.getElementById('f-conclusions').value = '';
+    formAttachments = [];
+    updateSaveReminder();
+  }
+
+  function addEntry() {
+    const date = document.getElementById('f-date').value;
+    const time = document.getElementById('f-time').value;
+    const endTime = document.getElementById('f-end-time').value;
+    const activity = document.getElementById('f-activity').value.trim();
+    const who = document.getElementById('f-who').value.trim();
+    const conclusions = document.getElementById('f-conclusions').value.trim();
+    const attachments = formAttachments;
+
+    if (!date || !activity) {
+      setStatus('נא למלא לפחות תאריך ופעילות.', true);
+      return;
+    }
+
+    if (editingId) {
+      const idx = entries.findIndex(e => e.id === editingId);
+      if (idx !== -1) {
+        entries[idx] = { ...entries[idx], date, time, endTime, activity, who, conclusions, attachments };
+      }
+      editingId = null;
+      setStatus('הרשומה עודכנה ✓', false);
+    } else {
+      entries.push({ id: uid(), date, time, endTime, activity, who, conclusions, attachments });
+    }
+
+    saveEntries();
+    clearForm();
+    clearDraft();
+    document.getElementById('f-activity').focus();
+    render();
+  }
+
+  function startEdit(id) {
+    const entry = entries.find(e => e.id === id);
+    if (!entry) return;
+    editingId = id;
+    formAttachments = (entry.attachments || []).map(a => ({ ...a }));
+    render();
+    document.getElementById('f-date').value = entry.date || '';
+    document.getElementById('f-time').value = entry.time || '';
+    document.getElementById('f-end-time').value = entry.endTime || '';
+    document.getElementById('f-activity').value = entry.activity || '';
+    document.getElementById('f-who').value = entry.who || '';
+    document.getElementById('f-conclusions').value = entry.conclusions || '';
+    document.getElementById('f-activity').focus();
+    document.getElementById('entry-form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    updateSaveReminder();
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    clearForm();
+    document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+    render();
+  }
+
+  function deleteEntry(id) {
+    const entry = entries.find(e => e.id === id);
+    const label = entry ? `הרשומה "${entry.activity || 'ללא תיאור'}" (${entry.date || ''})` : 'הרשומה';
+    const ok = window.confirm(`למחוק את ${label}? הפעולה תימחק גם מהענן ומכל המכשירים המסונכרנים, ולא ניתן לבטל אותה.`);
+    if (!ok) return;
+    entries = entries.filter(e => e.id !== id);
+    if (editingId === id) editingId = null;
+    saveEntries();
+    render();
+  }
+
+  function serializeSeed(data) {
+    // Escape characters that could break out of the <script> tag or JS string context.
+    return JSON.stringify(data)
+      .replace(/</g, '\\u003c')
+      .replace(/>/g, '\\u003e')
+      .replace(/\u2028/g, '\\u2028')
+      .replace(/\u2029/g, '\\u2029');
+  }
+
+  function exportAppWithData() {
+    if (!entries.length) {
+      setStatus('אין רשומות לשמור בקובץ.', true);
+      return;
+    }
+    const seedRegex = /\/\*SEED_START\*\/[\s\S]*?\/\*SEED_END\*\//;
+    if (!seedRegex.test(ORIGINAL_HTML)) {
+      setStatus('שמירה לקובץ נכשלה (בעיה פנימית בזיהוי מבנה הקובץ).', true);
+      return;
+    }
+    const replacement = `/*SEED_START*/window.__SEED_ENTRIES__ = ${serializeSeed(entries)};/*SEED_END*/`;
+    const newHtml = ORIGINAL_HTML.replace(seedRegex, replacement);
+
+    const blob = new Blob([newHtml], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const today = new Date().toISOString().slice(0, 10);
+    link.download = `יומן_עבודה_עם_נתונים_${today}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    try { localStorage.setItem(LAST_BACKUP_KEY, new Date().toISOString()); } catch (e) { /* ignore */ }
+    backupReminderDismissed = false;
+    setStatus(`נשמר קובץ עם ${entries.length} רשומות ✓ אפשר לשלוח אותו במייל או להעביר לנייד.`, false);
+    render();
+  }
+
+  function exportToWord(monthKey) {
+    let sorted = sortedEntries();
+    if (monthKey && monthKey !== 'all') {
+      sorted = sorted.filter(e => getMonthKey(e.date) === monthKey);
+    }
+    if (!sorted.length) {
+      setStatus(monthKey && monthKey !== 'all' ? 'אין רשומות בחודש שנבחר לייצוא.' : 'אין רשומות לייצוא.', true);
+      return;
+    }
+
+    const whoSetExport = new Set();
+    sorted.forEach(e => whoTokens(e.who).forEach(n => whoSetExport.add(n)));
+    const exportDateStr = fmtDateDisplay(new Date().toISOString().slice(0, 10));
+
+    // ---- Month grouping for section headers ----
+    let currentMonthKey = null;
+    let rowIndex = 0;
+    const rowsHtml = sorted.map(e => {
+      const d = new Date(e.date + 'T00:00:00');
+      const monthKey = `${d.getFullYear()}-${d.getMonth()}`;
+      let sectionHeader = '';
+      if (monthKey !== currentMonthKey) {
+        currentMonthKey = monthKey;
+        rowIndex = 0;
+        sectionHeader = `
+        <tr>
+          <td colspan="7" style="background:#EDF1F8;border:1px solid #999;padding:7px 10px;font-weight:bold;color:#1F3864;font-size:11.5pt;">
+            ${escapeHtml(HEBREW_MONTHS[d.getMonth()])} ${d.getFullYear()}
+          </td>
+        </tr>`;
+      }
+      const shade = rowIndex % 2 === 1 ? 'background:#F7F8FA;' : '';
+      rowIndex++;
+      return sectionHeader + `
+      <tr>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;font-weight:bold;white-space:nowrap;">${escapeHtml(fmtDateDisplay(e.date))}</td>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;white-space:nowrap;text-align:center;">${escapeHtml(e.time || '—')}</td>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;white-space:nowrap;text-align:center;">${escapeHtml(e.endTime || '—')}</td>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;">${escapeHtml(e.activity)}</td>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;">${escapeHtml(e.who || '—')}</td>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;">${escapeHtml(e.conclusions || '—')}</td>
+        <td style="${shade}border:1px solid #ccc;padding:6px 8px;text-align:center;">${(e.attachments && e.attachments.length) ? e.attachments.map(a => `<img src="${a.dataUrl}" style="width:60pt;height:auto;margin:2px;">`).join('') : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="utf-8">
+        <title>יומן עבודה</title>
+        <!--[if gte mso 9]>
+        <xml>
+          <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+          </w:WordDocument>
+        </xml>
+        <![endif]-->
+        <style>
+          @page Section1 {
+            size: 842pt 595pt;
+            mso-page-orientation: landscape;
+            margin: 42pt 40pt 50pt 40pt;
+            mso-header-margin: 28pt;
+            mso-footer-margin: 22pt;
+            mso-footer: f1;
+          }
+          div.Section1 { page: Section1; }
+          body { direction: rtl; font-family: Calibri, David, Arial, sans-serif; color:#222; }
+
+          .bsd { text-align:right; font-size:11pt; color:#444; margin:0 0 4pt 0; }
+          .cover { text-align:center; margin-bottom: 6pt; }
+          h1 { color:#1F3864; font-size:24pt; margin:0 0 3pt 0; letter-spacing:0.3pt; }
+          p.sub { color:#555; font-size:12pt; margin:0 0 10pt 0; font-style: italic; }
+          .rule { border:none; border-top: 2pt solid #1F3864; margin: 6pt 0 12pt 0; }
+
+          table.log { border-collapse: collapse; width: 100%; }
+          table.log th {
+            background:#1F3864; color:#ffffff; border:1px solid #14264a;
+            padding:7px 8px; font-size:11pt; font-weight:bold;
+          }
+          table.log td { font-size:10.5pt; text-align:right; vertical-align:top; }
+
+          /* mso footer */
+          p.MsoFooter { margin:0; font-size:9pt; color:#777; text-align:center; }
+
+          table.summary { border-collapse: collapse; width: 100%; margin: 0 0 12pt 0; }
+          table.summary td {
+            border: 1pt solid #cfd8e3; background:#F5F8FC;
+            padding: 8pt 10pt; text-align:center; font-size:10.5pt; color:#555;
+          }
+          table.summary td b { display:block; font-size:15pt; color:#1F3864; margin-bottom:2pt; }
+          p.signoff { font-size:10pt; color:#555; text-align:left; margin-top:22pt; }
+          p.footnote { font-size:9pt; color:#888; text-align:center; margin-top:16pt; }
+        </style>
+      </head>
+      <body dir="rtl">
+        <div class="Section1">
+          <p class="bsd">בס״ד</p>
+          <div class="cover">
+            <h1>יומן עבודה</h1>
+            <p class="sub">הכנת שנת הלימודים תשפ״ז</p>
+          </div>
+          <hr class="rule">
+
+          <table class="summary">
+            <tr>
+              <td><b>${sorted.length}</b>רשומות</td>
+              <td><b>${fmtDateDisplay(sorted[0].date)} – ${fmtDateDisplay(sorted[sorted.length - 1].date)}</b>טווח תאריכים</td>
+              <td><b>${whoSetExport.size}</b>גורמים מעורבים</td>
+            </tr>
+          </table>
+
+          <table class="log">
+            <colgroup>
+              <col style="width:70pt;">
+              <col style="width:50pt;">
+              <col style="width:50pt;">
+              <col style="width:*;">
+              <col style="width:110pt;">
+              <col style="width:140pt;">
+              <col style="width:75pt;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>תאריך</th><th>שעת התחלה</th><th>שעת סיום</th><th>פעילות</th><th>גורמים מעורבים</th><th>מסקנות / החלטות</th><th>תמונות</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+
+          <p class="signoff">חתימה: ______________________</p>
+          ${(includeAnalysisInExport && analysisResultText) ? `
+          <div style="margin-top:16pt; page-break-inside:avoid;">
+            <h2 style="color:#1F3864;font-size:13pt;border-top:1pt solid #cfd8e3;padding-top:10pt;">נספח: סיכום וניתוח</h2>
+            <p style="font-size:10.5pt;color:#333;">${escapeHtml(analysisResultText).replace(/\n/g, '<br>')}</p>
+          </div>` : ''}
+          <p class="footnote">מסמך זה הופק מתוך יומן העבודה הדיגיטלי &nbsp;·&nbsp; הופק בתאריך ${exportDateStr}</p>
+        </div>
+
+        <div style="mso-element:footer" id="f1">
+          <p class="MsoFooter">יומן עבודה — הכנת שנת הלימודים תשפ״ז &nbsp;|&nbsp; עמוד <span style="mso-field-code: PAGE "></span> מתוך <span style="mso-field-code: NUMPAGES "></span></p>
+        </div>
+      </body>
+      </html>`;
+
+    const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const today = new Date().toISOString().slice(0, 10);
+    link.download = (monthKey && monthKey !== 'all') ? `יומן_עבודה_${monthLabel(monthKey).replace(' ', '_')}.doc` : `יומן_עבודה_${today}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  const HEBREW_MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+
+  function guessYear(month) {
+    const now = new Date();
+    const curYear = now.getFullYear();
+    const curMonth = now.getMonth() + 1;
+    // if the mentioned month is more than ~2 months "in the future" relative to now, assume it was last year
+    return (month - curMonth > 2) ? curYear - 1 : curYear;
+  }
+
+  function normalizeDateToken(dPart, mPart, yPart) {
+    const d = parseInt(dPart, 10);
+    const m = parseInt(mPart, 10);
+    if (!d || !m || d > 31 || m > 12) return '';
+    let y;
+    if (yPart) {
+      y = parseInt(yPart, 10);
+      if (yPart.length === 2) y += 2000;
+    } else {
+      y = guessYear(m);
+    }
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+
+  function handleDocxSelect(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    docxError = '';
+    docxFileName = file.name;
+    docxLoading = true;
+    reviewEntries = null;
+    render();
+
+    // Step 1: sniff the file as text. Our own export (.doc) is actually an HTML file,
+    // so if it looks like HTML we can parse it directly — no need for mammoth at all.
+    const textReader = new FileReader();
+    textReader.onload = () => {
+      const sniff = (textReader.result || '').slice(0, 500).trim().toLowerCase();
+      const looksLikeHtml = sniff.startsWith('<') && (sniff.includes('<html') || sniff.includes('<table') || sniff.includes('<!doctype'));
+
+      if (looksLikeHtml) {
+        finishWithHtmlText(textReader.result);
+      } else {
+        // Real binary .docx (zip/OOXML) — read as arraybuffer and use mammoth
+        readAsBinaryDocx(file);
+      }
+    };
+    textReader.onerror = () => readAsBinaryDocx(file);
+    textReader.readAsText(file, 'utf-8');
+  }
+
+  function finishWithHtmlText(htmlText) {
+    const parsedFromTable = tryParseOwnTable(htmlText);
+    if (parsedFromTable && parsedFromTable.length) {
+      reviewEntries = parsedFromTable;
+      reviewSource = 'table';
+      docxLoading = false;
+      render();
+      return;
+    }
+    // No matching table — strip tags and try the free-form heuristic on the visible text
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = htmlText;
+    const plainText = (wrapper.textContent || '').trim();
+    const parsed = parseFreeformText(plainText);
+    if (!parsed.length) {
+      docxError = 'לא זוהו רשומות בקובץ. ייתכן שהמבנה לא נתמך על ידי הזיהוי האוטומטי המקומי — ניתן להזין ידנית.';
+      docxLoading = false;
+      render();
+      return;
+    }
+    reviewEntries = parsed;
+    reviewSource = 'freeform';
+    docxLoading = false;
+    render();
+  }
+
+  function readAsBinaryDocx(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (!window.mammoth) {
+        docxError = 'ספריית קריאת הוורד לא נטענה (נדרש חיבור לאינטרנט בפעם הראשונה). רעני את הדף ונסי שוב.';
+        docxLoading = false;
+        render();
+        return;
+      }
+      // First try: does this file contain a table matching our own export format?
+      window.mammoth.convertToHtml({ arrayBuffer: reader.result })
+        .then(result => {
+          const parsedFromTable = tryParseOwnTable(result.value || '');
+          if (parsedFromTable && parsedFromTable.length) {
+            reviewEntries = parsedFromTable;
+            reviewSource = 'table';
+            docxLoading = false;
+            render();
+            return;
+          }
+          // Fallback: extract raw text and run the free-form heuristic parser
+          window.mammoth.extractRawText({ arrayBuffer: reader.result })
+            .then(r2 => {
+              const text = (r2.value || '').trim();
+              if (!text) {
+                docxError = 'לא נמצא טקסט בקובץ הוורד.';
+                docxLoading = false;
+                render();
+                return;
+              }
+              const parsed = parseFreeformText(text);
+              if (!parsed.length) {
+                docxError = 'לא זוהו רשומות בקובץ. ייתכן שהמבנה לא נתמך על ידי הזיהוי האוטומטי המקומי — ניתן להזין ידנית.';
+                docxLoading = false;
+                render();
+                return;
+              }
+              reviewEntries = parsed;
+              reviewSource = 'freeform';
+              docxLoading = false;
+              render();
+            })
+            .catch(() => {
+              docxError = 'לא הצלחתי לקרוא את קובץ הוורד.';
+              docxLoading = false;
+              render();
+            });
+        })
+        .catch(() => {
+          docxError = 'לא הצלחתי לקרוא את קובץ הוורד. ודאי שזהו קובץ ‎.docx‏ תקין, או קובץ ‎.doc‏ שיוצא מהאפליקציה הזו.';
+          docxLoading = false;
+          render();
+        });
+    };
+    reader.onerror = () => {
+      docxError = 'קריאת קובץ הוורד נכשלה בדפדפן.';
+      docxLoading = false;
+      render();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // Parses a table matching our own export format: תאריך | שעה | פעילות | גורמים מעורבים | מסקנות / החלטות
+  function tryParseOwnTable(htmlStr) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = htmlStr;
+    const tables = Array.from(wrapper.querySelectorAll('table'));
+    if (!tables.length) return null;
+
+    // Find the table whose header row matches our expected columns (there may be
+    // other tables in the document, e.g. the summary stats table in the export).
+    let table = null;
+    for (const t of tables) {
+      const rows = t.querySelectorAll('tr');
+      if (!rows.length) continue;
+      const headerCells = Array.from(rows[0].querySelectorAll('th,td')).map(c => c.textContent.trim());
+      if (headerCells[0] && headerCells[0].includes('תאריך') && headerCells.some(h => h.includes('פעילות'))) {
+        table = t;
+        break;
+      }
+    }
+    if (!table) return null;
+    const rows = Array.from(table.querySelectorAll('tr'));
+    if (rows.length < 2) return null;
+
+    // Detect whether this export includes a separate "end time" column (newer format)
+    const headerCells0 = Array.from(rows[0].querySelectorAll('th,td')).map(c => c.textContent.trim());
+    const hasEndTimeCol = headerCells0.some(h => h.includes('סיום'));
+
+    const out = [];
+    for (let i = 1; i < rows.length; i++) {
+      const cells = Array.from(rows[i].querySelectorAll('td')).map(c => c.textContent.trim());
+      if (!cells.length) continue;
+
+      let dateDisp, time, endTime, activity, who, conclusions;
+      if (hasEndTimeCol) {
+        [dateDisp, time, endTime, activity, who, conclusions] = cells;
+      } else {
+        [dateDisp, time, activity, who, conclusions] = cells;
+        endTime = '';
+      }
+      const m = (dateDisp || '').match(/(\d{1,2})\.(\d{1,2})\.(\d{2,4})/);
+      const isoDate = m ? normalizeDateToken(m[1], m[2], m[3]) : '';
+      if (!isoDate && !activity) continue;
+      out.push({
+        id: uid(),
+        selected: true,
+        date: isoDate,
+        time: (time && time !== '—') ? time : '',
+        endTime: (endTime && endTime !== '—') ? endTime : '',
+        activity: (activity && activity !== '—') ? activity : '',
+        who: (who && who !== '—') ? who : '',
+        conclusions: (conclusions && conclusions !== '—') ? conclusions : ''
+      });
+    }
+    return out;
+  }
+
+  // Heuristic parser for free-form journal text:
+  // date header lines (e.g. "8.7.26 (8 ביולי 2026)") followed by "HH:MM – activity" lines.
+  function parseFreeformText(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const dateLineRe = /^(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?\s*(?:\(.*\))?$/;
+    // Try a time RANGE first ("10:00-11:40 – ...."), then fall back to a single start time.
+    const timeRangeLineRe = /^(\d{1,2}):(\d{2})\s*[-–—]\s*(\d{1,2}):(\d{2})\s*[-–—]\s*(.+)$/;
+    const timeLineRe = /^(\d{1,2}):(\d{2})\s*[-–—]\s*(.+)$/;
+
+    const out = [];
+    let currentDate = '';
+    let currentEntry = null;
+
+    for (const line of lines) {
+      const dm = line.match(dateLineRe);
+      if (dm) {
+        currentDate = normalizeDateToken(dm[1], dm[2], dm[3]);
+        currentEntry = null;
+        continue;
+      }
+      const trm = line.match(timeRangeLineRe);
+      if (trm) {
+        currentEntry = {
+          id: uid(),
+          selected: true,
+          date: currentDate,
+          time: `${trm[1].padStart(2, '0')}:${trm[2]}`,
+          endTime: `${trm[3].padStart(2, '0')}:${trm[4]}`,
+          activity: trm[5].trim(),
+          who: '',
+          conclusions: ''
+        };
+        out.push(currentEntry);
+        continue;
+      }
+      const tm = line.match(timeLineRe);
+      if (tm) {
+        currentEntry = {
+          id: uid(),
+          selected: true,
+          date: currentDate,
+          time: `${tm[1].padStart(2, '0')}:${tm[2]}`,
+          endTime: '',
+          activity: tm[3].trim(),
+          who: '',
+          conclusions: ''
+        };
+        out.push(currentEntry);
+        continue;
+      }
+      // Continuation line (doesn't match date or time pattern): attach to the previous entry, if any
+      if (currentEntry) {
+        currentEntry.activity += ' ' + line;
+      }
+      // else: line before any recognized entry (e.g. "בס"ד") — ignored
+    }
+    return out.filter(e => e.date && e.activity);
+  }
+
+  function toggleReviewEntry(id) {
+    if (!reviewEntries) return;
+    const e = reviewEntries.find(r => r.id === id);
+    if (e) e.selected = !e.selected;
+    render();
+  }
+
+  function cancelReview() {
+    reviewEntries = null;
+    docxFileName = null;
+    render();
+  }
+
+  function commitReviewEntries() {
+    if (!reviewEntries) return;
+    const chosen = reviewEntries.filter(r => r.selected && r.date && r.activity);
+    if (chosen.length === 0) {
+      docxError = 'לא נבחרו רשומות תקינות (חובה תאריך ופעילות).';
+      render();
+      return;
+    }
+    chosen.forEach(r => {
+      entries.push({ id: uid(), date: r.date, time: r.time, endTime: r.endTime, activity: r.activity, who: r.who, conclusions: r.conclusions });
+    });
+    saveEntries();
+    reviewEntries = null;
+    docxFileName = null;
+    setStatus(`נוספו ${chosen.length} רשומות מהקובץ ✓`, false);
+    render();
+  }
+
+  // ---- Voice dictation (Web Speech API) ----
+  const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let activeRecognition = null;
+  let activeMicBtn = null;
+
+  function setMicStatus(msg, isError) {
+    const el = document.getElementById('mic-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.className = 'ocr-status' + (isError ? ' error' : '');
+  }
+
+  function stopActiveRecording() {
+    if (activeRecognition) {
+      try { activeRecognition.stop(); } catch (e) {}
+    }
+  }
+
+  function startRecording(targetId, btn) {
+    if (!SpeechRecognitionCtor) {
+      setMicStatus('הקלטה קולית לא נתמכת בדפדפן הזה. אפשר להשתמש באייקון המיקרופון של מקלדת הטלפון בתוך השדה.', true);
+      return;
+    }
+    // If already recording on another field, stop it first
+    if (activeRecognition) {
+      stopActiveRecording();
+    }
+
+    const recognition = new SpeechRecognitionCtor();
+    recognition.lang = 'he-IL';
+    recognition.interimResults = false;
+    recognition.continuous = true;
+
+    const field = document.getElementById(targetId);
+    const startingValue = field ? field.value : '';
+
+    activeRecognition = recognition;
+    activeMicBtn = btn;
+    btn.classList.add('recording');
+    btn.textContent = '⏹';
+    setMicStatus('מקליט… לחצי שוב על המיקרופון כדי לעצור.', false);
+
+    recognition.onresult = (event) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      if (field) {
+        const sep = startingValue && !startingValue.endsWith(' ') ? ' ' : '';
+        field.value = (startingValue + sep + transcript).trim();
+        saveDraft();
+      }
+    };
+
+    recognition.onerror = (event) => {
+      const reasons = {
+        'not-allowed': 'הגישה למיקרופון נחסמה. יש לאשר הרשאת מיקרופון בדפדפן.',
+        'no-speech': 'לא זוהה דיבור. נסי שוב.',
+        'audio-capture': 'לא נמצא מיקרופון זמין במכשיר.',
+        'service-not-allowed': 'זיהוי הדיבור חסום בדפדפן זה (נפוץ ב-iPhone/Safari). אפשר להשתמש באייקון המיקרופון שבמקלדת עצמה במקום.'
+      };
+      setMicStatus(reasons[event.error] || ('שגיאת הקלטה: ' + event.error), true);
+      resetMicButton();
+    };
+
+    recognition.onend = () => {
+      resetMicButton();
+      setMicStatus('', false);
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      setMicStatus('לא ניתן להפעיל הקלטה: ' + e.message, true);
+      resetMicButton();
+    }
+  }
+
+  function resetMicButton() {
+    if (activeMicBtn) {
+      activeMicBtn.classList.remove('recording');
+      activeMicBtn.textContent = '🎤';
+    }
+    activeRecognition = null;
+    activeMicBtn = null;
+  }
+
+  function handleMicClick(btn) {
+    const targetId = btn.dataset.target;
+    if (activeRecognition && activeMicBtn === btn) {
+      stopActiveRecording();
+      return;
+    }
+    startRecording(targetId, btn);
+  }
+
+  function render() {
+    if (securityState !== 'unlocked') {
+      renderLockScreen();
+      return;
+    }
+
+    if (!loaded) {
+      root.innerHTML = `<div class="loading">טוען יומן עבודה…</div>`;
+      return;
+    }
+
+    const list = sortedEntries();
+
+    const topWho = getFrequentWho(6);
+    const quickChipsHtml = !editingId ? `
+      <div class="quick-row">
+        ${topWho.map(name => `<button type="button" class="quick-chip" data-quick-who="${escapeHtml(name)}">👤 ${escapeHtml(name)}</button>`).join('')}
+        ${entries.length ? `<button type="button" class="quick-chip duplicate" id="duplicate-last-btn">⧉ שכפול הרשומה האחרונה</button>` : ''}
+      </div>` : '';
+
+    const summaryBarHtml = list.length ? `
+      <div class="summary-bar">
+        <div class="summary-pill"><b>${list.length}</b>רשומות</div>
+        <div class="summary-pill"><b>${fmtDateDisplay(list[0].date)} – ${fmtDateDisplay(list[list.length - 1].date)}</b>טווח תאריכים</div>
+        <div class="summary-pill"><b>${getAllWhoTokens().length}</b>גורמים מעורבים</div>
+      </div>` : '';
+
+    const monthKeys = Array.from(new Set(list.map(e => getMonthKey(e.date)).filter(Boolean))).sort();
+    const activeMonthFilter = monthKeys.includes(monthFilter) ? monthFilter : 'all';
+    const visibleList = activeMonthFilter === 'all' ? list : list.filter(e => getMonthKey(e.date) === activeMonthFilter);
+    const monthFilterHtml = monthKeys.length ? `
+      <select id="month-filter-select" class="month-filter-select">
+        <option value="all" ${activeMonthFilter === 'all' ? 'selected' : ''}>כל החודשים</option>
+        ${monthKeys.map(k => `<option value="${k}" ${activeMonthFilter === k ? 'selected' : ''}>${monthLabel(k)}</option>`).join('')}
+      </select>` : '';
+    const visibleRowsHtml = visibleList.map(e => `
+      <tr class="${e.id === editingId ? 'editing-row' : ''}">
+        <td class="col-date">${escapeHtml(fmtDateDisplay(e.date))}</td>
+        <td class="col-time">${escapeHtml(e.time || '—')}</td>
+        <td class="col-time">${escapeHtml(e.endTime || '—')}</td>
+        <td>${escapeHtml(e.activity)}</td>
+        <td>${escapeHtml(e.who || '—')}</td>
+        <td>${escapeHtml(e.conclusions || '—')}</td>
+        <td class="col-photos">${(e.attachments && e.attachments.length) ? `
+          <div class="row-thumbs">
+            ${e.attachments.slice(0, 3).map(a => `<a class="row-thumb-link" href="${a.dataUrl}" target="_blank" rel="noopener" title="${escapeHtml(a.name || '')}"><img src="${a.dataUrl}" alt=""></a>`).join('')}
+            ${e.attachments.length > 3 ? `<span class="row-thumb-more">+${e.attachments.length - 3}</span>` : ''}
+          </div>` : '—'}</td>
+        <td class="col-actions">
+          <button class="edit-btn" data-id="${e.id}" title="עריכה">✎</button>
+          <button class="del-btn" data-id="${e.id}" title="מחיקה">✕</button>
+        </td>
+      </tr>`).join('');
+
+    root.innerHTML = `
+      <div class="wrap">
+        <div class="masthead">
+          <div>
+            <h1>יומן עבודה</h1>
+            <p>הכנת שנת הלימודים תשפ״ז &nbsp;·&nbsp; ${list.length} רשומות &nbsp;·&nbsp; <span id="sync-badge" class="sync-badge sync-${syncState}" title="${escapeHtml(fbErrorDetail)}">${syncBadgeText(syncState)}</span> <button class="sync-retry-btn" id="sync-retry-btn" title="נסה לסנכרן שוב" ${syncState === 'connecting' || syncState === 'saving' ? 'disabled' : ''}>🔄</button></p>
+          </div>
+          <div class="masthead-actions">
+            <button class="export-btn" id="export-data-btn" ${list.length ? '' : 'disabled'} title="שומר עותק של הקובץ עם כל הנתונים בתוכו — אפשר לשלוח אותו במייל או להעביר לנייד">💾 שמור קובץ עם נתונים</button>
+            <button class="export-btn" id="export-btn" ${list.length ? '' : 'disabled'}>⬇ ייצוא לוורד</button>
+          </div>
+        </div>
+
+        ${summaryBarHtml}
+
+        ${(() => {
+          const days = getDaysSinceBackup();
+          if (backupReminderDismissed || days === null || days < 2) return '';
+          return `
+        <div class="card seed-banner">
+          <p>לא גיבית קובץ נתונים כבר ${days} ימים. מומלץ לייצא עותק גיבוי כדי לא לאבד רשומות אם משהו יקרה לדפדפן.</p>
+          <div style="display:flex; gap:10px;">
+            <button class="commit-btn" id="backup-now-btn">💾 ייצא עכשיו</button>
+            <button class="commit-btn" id="dismiss-backup-btn" style="background:#8a94a6;">דחה להיום</button>
+          </div>
+        </div>`;
+        })()}
+
+        <div class="card" id="entry-form-card">
+          <h2>${editingId ? 'עריכת רשומה' : 'הוספת רשומה'}</h2>
+          <div id="save-reminder-banner" class="save-reminder"></div>
+          ${quickChipsHtml}
+          <div class="form-grid">
+            <div class="full datetime-row">
+              <div>
+                <label for="f-date">תאריך</label>
+                <input type="date" id="f-date">
+              </div>
+              <div>
+                <label for="f-time">שעת התחלה</label>
+                <div class="time-with-now">
+                  <input type="time" id="f-time">
+                  <button type="button" class="now-btn" data-time-target="f-time">עכשיו</button>
+                </div>
+              </div>
+              <div>
+                <label for="f-end-time">שעת סיום</label>
+                <div class="time-with-now">
+                  <input type="time" id="f-end-time">
+                  <button type="button" class="now-btn" data-time-target="f-end-time">עכשיו</button>
+                </div>
+              </div>
+            </div>
+            <div class="full">
+              <label for="f-activity">פעילות</label>
+              <div class="field-with-mic">
+                <textarea id="f-activity" placeholder="מה עשית..."></textarea>
+                <button type="button" class="mic-btn" data-target="f-activity" title="הקלטת דיבור">🎤</button>
+              </div>
+            </div>
+            <div>
+              <label for="f-who">גורמים מעורבים</label>
+              <div class="field-with-mic">
+                <input type="text" id="f-who" placeholder="שמות המעורבים" list="who-suggestions">
+                <button type="button" class="mic-btn" data-target="f-who" title="הקלטת דיבור">🎤</button>
+              </div>
+              <datalist id="who-suggestions">${getAllWhoTokens().map(n => `<option value="${escapeHtml(n)}">`).join('')}</datalist>
+            </div>
+            <div>
+              <label for="f-conclusions">מסקנות / החלטות</label>
+              <div class="field-with-mic">
+                <input type="text" id="f-conclusions" placeholder="מה סוכם או הוחלט">
+                <button type="button" class="mic-btn" data-target="f-conclusions" title="הקלטת דיבור">🎤</button>
+              </div>
+            </div>
+            <div class="full">
+              <label>תמונות / צילומי מסך</label>
+              <div class="attach-row">
+                <button type="button" class="attach-btn" id="attach-btn">📎 צרפי תמונה</button>
+                <input type="file" id="f-attachments" accept="image/*" multiple style="display:none;">
+                <span id="attach-status" class="ocr-status"></span>
+              </div>
+              ${formAttachments.length ? `
+              <div class="attach-preview-strip">
+                ${formAttachments.map(a => `
+                <div class="attach-thumb-wrap">
+                  <img src="${a.dataUrl}" alt="${escapeHtml(a.name || '')}">
+                  <button type="button" class="attach-remove-btn" data-remove-attachment="${a.id}" title="הסר תמונה">✕</button>
+                </div>`).join('')}
+              </div>` : ''}
+            </div>
+          </div>
+          <div id="mic-status" class="ocr-status"></div>
+          <div class="add-row">
+            <button class="add-btn" id="add-btn">${editingId ? '✓ עדכן רשומה' : '+ הוסף רשומה'}</button>
+            ${editingId ? '<button class="cancel-btn" id="cancel-btn">ביטול</button>' : ''}
+          </div>
+          <div class="status-msg" id="status-msg"></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom: 12px;">
+            <h2 style="margin:0;">הרשומות שלי</h2>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              ${monthFilterHtml}
+              <button class="export-btn secondary-btn" id="export-month-btn" data-month="${activeMonthFilter}" ${visibleList.length ? '' : 'disabled'} title="${activeMonthFilter !== 'all' ? `ייצוא לוורד רק של ${monthLabel(activeMonthFilter)}` : 'ייצוא כל הרשומות (כל החודשים) לוורד'}">⬇ ייצוא ${activeMonthFilter !== 'all' ? monthLabel(activeMonthFilter) : 'כל החודשים'} לוורד</button>
+            </div>
+          </div>
+          ${visibleList.length ? `
+          <table>
+            <thead>
+              <tr><th>תאריך</th><th>שעת התחלה</th><th>שעת סיום</th><th>פעילות</th><th>גורמים מעורבים</th><th>מסקנות / החלטות</th><th>תמונות</th><th></th></tr>
+            </thead>
+            <tbody>${visibleRowsHtml}</tbody>
+          </table>` : `<div class="empty-state">${list.length ? 'אין רשומות בחודש שנבחר.' : 'עדיין אין רשומות. הוסיפי את הפעילות הראשונה למעלה.'}</div>`}
+        </div>
+
+        <div class="card" id="analysis-card">
+          <h2>ניתוח וסיכום</h2>
+          <div class="analysis-controls">
+            <button class="export-btn secondary-btn" id="quick-analysis-btn" ${list.length ? '' : 'disabled'}>⚡ משימות פתוחות (מהיר)</button>
+          </div>
+          ${analysisError ? `<div class="analysis-error">${escapeHtml(analysisError)}</div>` : ''}
+          <div id="analysis-result">${analysisResultHtml}</div>
+          ${analysisResultText ? `
+          <label class="analysis-checkbox-row">
+            <input type="checkbox" id="include-analysis-checkbox" ${includeAnalysisInExport ? 'checked' : ''}>
+            לצרף את הניתוח האחרון כנספח לייצוא לוורד
+          </label>` : ''}
+        </div>
+
+        <div class="card upload-card">
+          <h2>ייבוא רשומות מקובץ Word</h2>
+          <p style="font-size:13px;color:var(--muted);margin-top:-4px;">
+            עובד גם על קובץ שיוצא מהאפליקציה הזו (זיהוי מדויק) וגם על יומן חופשי בפורמט "תאריך" ואז שורות "שעה – פעילות" (זיהוי משוער — כדאי לבדוק את התוצאה לפני האישור).
+          </p>
+
+          <button class="export-btn secondary-btn" id="import-seed-btn" ${seedBannerEntries ? '' : 'disabled'} title="${seedBannerEntries ? `הקובץ מכיל ${seedBannerEntries.length} רשומות מובנות — לחצי לייבוא` : 'זמין רק כשקובץ ה-HTML שנפתח מכיל נתונים מובנים לייבוא'}" style="margin-bottom:14px;">📥 ייבוא נתונים מהקובץ</button>
+
+          <div class="upload-block">
+            <div class="upload-row">
+              <input type="file" id="docx-file-input" accept=".docx,.doc">
+              ${docxFileName ? `<span class="ocr-status">${escapeHtml(docxFileName)}${docxLoading ? ' — קורא…' : ''}</span>` : ''}
+            </div>
+            ${docxError ? `<div class="ocr-status error">${escapeHtml(docxError)}</div>` : ''}
+          </div>
+
+          ${reviewEntries ? `
+          <div class="review-table-wrap">
+            <p style="font-size:12.5px;color:var(--muted);">
+              ${reviewSource === 'table' ? 'זוהתה טבלה בפורמט המוכר — ' : 'זיהוי משוער מתוך טקסט חופשי — כדאי לעבור ולוודא לפני האישור — '}
+              נמצאו ${reviewEntries.length} רשומות.
+            </p>
+            <table>
+              <thead>
+                <tr><th></th><th>תאריך</th><th>שעת התחלה</th><th>שעת סיום</th><th>פעילות</th><th>גורמים מעורבים</th><th>מסקנות</th></tr>
+              </thead>
+              <tbody>
+                ${reviewEntries.map(r => `
+                <tr>
+                  <td class="col-check"><input type="checkbox" data-review-id="${r.id}" ${r.selected ? 'checked' : ''}></td>
+                  <td>${escapeHtml(fmtDateDisplay(r.date))}</td>
+                  <td>${escapeHtml(r.time || '—')}</td>
+                  <td>${escapeHtml(r.endTime || '—')}</td>
+                  <td>${escapeHtml(r.activity)}</td>
+                  <td>${escapeHtml(r.who || '—')}</td>
+                  <td>${escapeHtml(r.conclusions || '—')}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+            <div style="display:flex; gap:10px;">
+              <button class="commit-btn" id="commit-btn">הוסף את הרשומות המסומנות ליומן</button>
+              <button class="commit-btn" id="cancel-review-btn" style="background:#8a94a6;">בטל</button>
+            </div>
+          </div>` : ''}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('add-btn').addEventListener('click', addEntry);
+    document.getElementById('sync-retry-btn')?.addEventListener('click', retrySync);
+    document.getElementById('cancel-btn')?.addEventListener('click', cancelEdit);
+    document.getElementById('export-btn')?.addEventListener('click', () => exportToWord());
+    document.getElementById('export-data-btn')?.addEventListener('click', exportAppWithData);
+    document.getElementById('import-seed-btn')?.addEventListener('click', importSeedBanner);
+    document.getElementById('backup-now-btn')?.addEventListener('click', exportAppWithData);
+    document.getElementById('dismiss-backup-btn')?.addEventListener('click', dismissBackupReminder);
+    document.getElementById('docx-file-input')?.addEventListener('change', (ev) => handleDocxSelect(ev.target));
+    document.getElementById('commit-btn')?.addEventListener('click', commitReviewEntries);
+    document.getElementById('cancel-review-btn')?.addEventListener('click', cancelReview);
+    root.querySelectorAll('[data-review-id]').forEach(cb => {
+      cb.addEventListener('change', () => toggleReviewEntry(cb.dataset.reviewId));
+    });
+    root.querySelectorAll('.mic-btn').forEach(btn => {
+      btn.addEventListener('click', () => handleMicClick(btn));
+    });
+    root.querySelectorAll('[data-time-target]').forEach(btn => {
+      btn.addEventListener('click', () => setTimeNow(btn.dataset.timeTarget));
+    });
+    root.querySelectorAll('[data-quick-who]').forEach(btn => {
+      btn.addEventListener('click', () => applyQuickWho(btn.dataset.quickWho));
+    });
+    document.getElementById('duplicate-last-btn')?.addEventListener('click', duplicateLastEntry);
+    document.getElementById('attach-btn')?.addEventListener('click', () => document.getElementById('f-attachments')?.click());
+    document.getElementById('f-attachments')?.addEventListener('change', (ev) => handleAttachmentFiles(ev.target.files));
+    root.querySelectorAll('[data-remove-attachment]').forEach(btn => {
+      btn.addEventListener('click', () => removeFormAttachment(btn.dataset.removeAttachment));
+    });
+    document.getElementById('month-filter-select')?.addEventListener('change', (ev) => setMonthFilter(ev.target.value));
+    document.getElementById('export-month-btn')?.addEventListener('click', (ev) => exportToWord(ev.currentTarget.dataset.month));
+    document.getElementById('quick-analysis-btn')?.addEventListener('click', runQuickAnalysis);
+    document.getElementById('include-analysis-checkbox')?.addEventListener('change', (ev) => toggleIncludeAnalysis(ev.target.checked));
+    DRAFT_FIELD_IDS.forEach(id => {
+      document.getElementById(id)?.addEventListener('input', saveDraft);
+    });
+    root.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteEntry(btn.dataset.id));
+    });
+    root.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => startEdit(btn.dataset.id));
+    });
+
+    const dateInput = document.getElementById('f-date');
+    if (dateInput && !dateInput.value) {
+      dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+  }
+
+  loadEntries();
+  initSecurity();
+  restoreDraftIfAny();
+
+  window.addEventListener('beforeunload', (ev) => {
+    const activity = document.getElementById('f-activity')?.value || '';
+    const who = document.getElementById('f-who')?.value || '';
+    const conclusions = document.getElementById('f-conclusions')?.value || '';
+    if (!editingId && (activity.trim() || who.trim() || conclusions.trim())) {
+      ev.preventDefault();
+      ev.returnValue = '';
+    }
+  });
+})();
+</script></body></html>
